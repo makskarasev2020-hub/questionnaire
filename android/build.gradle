@@ -1,0 +1,32 @@
+buildscript {
+    ext {
+        buildToolsVersion = "35.0.0"
+        minSdkVersion = 24
+        compileSdkVersion = 35
+        targetSdkVersion = 35
+        ndkVersion = "26.1.10909125"
+        kotlinVersion = "1.9.24"
+        REACT_NATIVE_NODE_MODULES_DIR = file("../node_modules/react-native")
+    }
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath("com.android.tools.build:gradle:8.7.0")
+        classpath("com.facebook.react:react-native-gradle-plugin:0.76.1")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.24")
+    }
+}
+
+// ЭТОТ БЛОК ОБЯЗАТЕЛЕН ДЛЯ НЕКОТОРЫХ БИБЛИОТЕК
+allprojects {
+    repositories {
+        maven { url 'https://maven.notifee.app/repository/libs-release' }
+        google()
+        mavenCentral()
+        maven { url 'https://www.jitpack.io' }
+    }
+}
+
+apply plugin: "com.facebook.react.rootproject"

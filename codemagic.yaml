@@ -1,0 +1,57 @@
+workflows:
+  ios-testflight:
+    name: iOS TestFlight
+    max_build_duration: 120
+    integrations:
+      app_store_connect: com.pro.med
+    environment:
+      xcode: latest
+      cocoapods: default
+      node: 20.11.1
+      ios_signing:
+        provisioning_profiles:
+          - pro_med_profile_2026
+        certificates:
+          - pro_med_dist_2026
+      groups:
+        - app_store_credentials
+      vars:
+        XCODE_WORKSPACE: "ios/questionnaire.xcworkspace"
+        XCODE_SCHEME: "questionnaire"
+
+    scripts:
+      - name: Install npm dependencies
+        script: |
+          npm ci --legacy-peer-deps --ignore-scripts || npm install --legacy-peer-deps --ignore-scripts
+          npx patch-package
+
+      - name: Install CocoaPods dependencies
+        script: |
+          cd ios
+          pod install
+
+      - name: Configure code signing for Xcode project
+        script: |
+          xcode-project use-profiles \
+            --project "ios/questionnaire.xcodeproj"
+
+      - name: Install Metal Toolchain (if missing)
+        script: |
+          xcodebuild -downloadComponent MetalToolchain || true
+
+      - name: Build ipa
+        script: |
+          export NODE_BINARY="$(command -v node)"
+          xcode-project build-ipa \
+            --workspace "$XCODE_WORKSPACE" \
+            --scheme "$XCODE_SCHEME"
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
+
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true

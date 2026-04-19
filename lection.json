@@ -1,0 +1,586 @@
+{
+  "id": 58,
+  "folder_id": "7",
+  "title": "Карточка лекций",
+  "questions": [
+    {
+      "title": "Страница 1 из 3",
+      "group": "Страница 1 из 3",
+      "page": {
+        "id": "0",
+        "name": "Страница 1 из 3",
+        "images": ""
+      },
+      "description": "",
+      "image_before": "",
+      "video_before": "",
+      "images": "",
+      "type": "page-descriptor",
+      "sort": "0",
+      "options": [],
+      "validation": ""
+    },
+    {
+      "title": "Название мероприятия",
+      "group": "Страница 1 из 3",
+      "page": {
+        "id": "0",
+        "name": "Страница 1 из 3",
+        "images": ""
+      },
+      "description": "",
+      "image_before": "",
+      "video_before": "",
+      "images": "",
+      "type": "string",
+      "sort": "1",
+      "options": {
+        "is_no_data": false,
+        "is_required": true
+      },
+      "validation": "0"
+    },
+    {
+      "title": "Метод проведения",
+      "group": "Страница 1 из 3",
+      "page": {
+        "id": "0",
+        "name": "Страница 1 из 3",
+        "images": ""
+      },
+      "description": "",
+      "image_before": "",
+      "video_before": "",
+      "images": "",
+      "type": "select",
+      "sort": "2",
+      "options": {
+        "values": [
+          "Онлайн",
+          "Офлайн",
+          "Микс"
+        ],
+        "is_right": "undefined",
+        "right_values_count": 0,
+        "multiple": 1,
+        "is_select_as_buttons": false,
+        "is_required": true
+      },
+      "validation": ""
+    },
+//////////////////////////////////////////////////////////////// Название лекции 
+  {
+      "title": "Название лекции",
+      "group": "Страница 1 из 3",
+      "page": {
+        "id": "0",
+        "name": "Страница 1 из 3",
+        "images": ""
+      },
+      "description": "",
+      "image_before": "",
+      "video_before": "",
+      "images": "",
+      "type": "lecture-title",
+      "sort": "3",
+      "options": {
+        "is_required": true,
+        "values_url": "api/questionnaires/lecture-title/list"
+      },
+      "validation": ""
+    },
+	//////////////////////////////////////////////////////////////// ЭТО ВИДИМО ЕЩЕ НА БЕКЕ ДОРАБОТАЕМ, ЧТОБЫ ПРИХОДИЛ МЕТОД ВАЛИДАЦИИ "ДАТА", и соответственно нужно дэйтпикер
+    {
+      "title": "Дата проведения",
+      "group": "Страница 1 из 3",
+      "page": {
+        "id": "0",
+        "name": "Страница 1 из 3",
+        "images": ""
+      },
+      "description": "",
+      "image_before": "",
+      "video_before": "",
+      "images": "",
+      "type": "string",
+      "sort": "4",
+      "options": {
+        "is_no_data": false,
+        "is_required": true
+      },
+      "validation": "0"
+    },
+	//////////////////////////////////////////////////////////////// Вот это 
+    {
+      "title": "Лектор",
+      "group": "Страница 1 из 3",
+      "page": {
+        "id": "0",
+        "name": "Страница 1 из 3",
+        "images": ""
+      },
+      "description": "",
+      "image_before": "",
+      "video_before": "",
+      "images": "",
+      "type": "lecturer",
+      "sort": "5",
+      "options": {
+        "is_required": true,
+        "values_url": "api/questionnaires/lecturer/list"
+      },
+      "validation": ""
+    },
+    {
+      "title": "Регион ",
+      "group": "Страница 1 из 3",
+      "page": {
+        "id": "0",
+        "name": "Страница 1 из 3",
+        "images": ""
+      },
+      "description": "",
+      "image_before": "",
+      "video_before": "",
+      "images": "",
+      "type": "select",
+      "sort": "6",
+      "options": {
+        "values": [
+          "Москва",
+          "Центр",
+          "Северо-Запад",
+          "Нижняя Волга",
+          "Верхняя Волга",
+          "Урал",
+          "Юг",
+          "Сибирь",
+          "Дальний Восток"
+        ],
+        "is_right": "undefined",
+        "right_values_count": 0,
+        "multiple": 0,
+        "is_select_as_buttons": true,
+        "is_required": true
+      },
+      "validation": ""
+    },
+    {
+      "title": "Город",
+      "group": "Страница 1 из 3",
+      "page": {
+        "id": "0",
+        "name": "Страница 1 из 3",
+        "images": ""
+      },
+      "description": "",
+      "image_before": "",
+      "video_before": "",
+      "images": "",
+      "type": "city",
+      "sort": "7",
+      "options": {
+        "is_required": true
+      },
+      "validation": ""
+    },
+    {
+      "title": "Адрес",
+      "group": "Страница 1 из 3",
+      "page": {
+        "id": "0",
+        "name": "Страница 1 из 3",
+        "images": ""
+      },
+      "description": "",
+      "image_before": "",
+      "video_before": "",
+      "images": "",
+      "type": "address",
+      "sort": "8",
+      "options": {
+        "is_required": true
+      },
+      "validation": ""
+    },
+	//////////////////////////////////////////////////////////////// Вот это надо сверстать как в макете
+    {
+      "title": "Ключевые сообщения",
+      "group": "Страница 1 из 3",
+      "page": {
+        "id": "0",
+        "name": "Страница 1 из 3",
+        "images": ""
+      },
+      "description": "",
+      "image_before": "",
+      "video_before": "",
+      "images": "",
+      "type": "key-messages-checkboxes",
+      "sort": "9",
+      "options": {
+        "values": [
+          "КС1",
+          "КС2",
+          "КС3"
+        ],
+        "is_right": "undefined",
+        "right_values_count": 0,
+        "multiple": 0,
+        "values_group": [
+          "header1",
+          "header1",
+          "header1"
+        ],
+        "header1": "Прозвучало?",
+        "header2": "Был ли слайд с КС?",
+        "is_required": true
+      },
+      "validation": ""
+    },
+	//////////////////////////////////////////////////////////////// Кем органиовано 
+    {
+      "title": "Кем организовано мероприятие",
+      "group": "Страница 1 из 3",
+      "page": {
+        "id": "0",
+        "name": "Страница 1 из 3",
+        "images": ""
+      },
+      "description": "",
+      "image_before": "",
+      "video_before": "",
+      "images": "",
+      "type": "who-organized",
+      "sort": "10",
+      "options": {
+        "is_required": true,
+        "values_url": "api/questionnaires/who-organized/list"
+      },
+      "validation": ""
+    },
+    {
+      "title": "Страница 2 из 3",
+      "group": "Страница 2 из 3",
+      "page": {
+        "id": "11",
+        "name": "Страница 2 из 3",
+        "images": ""
+      },
+      "description": "",
+      "image_before": "",
+      "video_before": "",
+      "images": "",
+      "type": "page-descriptor",
+      "sort": "11",
+      "options": [],
+      "validation": ""
+    },
+    {
+      "title": "Количество слушателей",
+      "group": "Страница 2 из 3",
+      "page": {
+        "id": "11",
+        "name": "Страница 2 из 3",
+        "images": ""
+      },
+      "description": "",
+      "image_before": "",
+      "video_before": "",
+      "images": "",
+      "type": "number",
+      "sort": "12",
+      "options": {
+        "min": "1",
+        "max": "300",
+        "is_required": false
+      },
+      "validation": ""
+    },
+    {
+      "title": "Врачебная специализация слушателей",
+      "group": "Страница 2 из 3",
+      "page": {
+        "id": "11",
+        "name": "Страница 2 из 3",
+        "images": ""
+      },
+      "description": "",
+      "image_before": "",
+      "video_before": "",
+      "images": "",
+      "type": "select",
+      "sort": "13",
+      "options": {
+        "values": [
+          "Специализация 1",
+          "Специализация 2",
+          "Специализация 3"
+        ],
+        "is_right": "undefined",
+        "right_values_count": 0,
+        "multiple": 0,
+        "is_select_as_buttons": true,
+        "is_required": true
+      },
+      "validation": ""
+    },
+    {
+      "title": "Доля времени о препарате от общей продолжительности лекции в %",
+      "group": "Страница 2 из 3",
+      "page": {
+        "id": "11",
+        "name": "Страница 2 из 3",
+        "images": ""
+      },
+      "description": "",
+      "image_before": "",
+      "video_before": "",
+      "images": "",
+      "type": "number",
+      "sort": "14",
+      "options": {
+        "min": "1",
+        "max": "100",
+        "is_required": true
+      },
+      "validation": ""
+    },
+    {
+      "title": "Упоминание бренда устно",
+      "group": "Страница 2 из 3",
+      "page": {
+        "id": "11",
+        "name": "Страница 2 из 3",
+        "images": ""
+      },
+      "description": "",
+      "image_before": "",
+      "video_before": "",
+      "images": "",
+      "type": "number",
+      "sort": "15",
+      "options": {
+        "min": "0",
+        "max": "50",
+        "is_required": true
+      },
+      "validation": ""
+    },
+    {
+      "title": "Упоминание бренда на слайдах",
+      "group": "Страница 2 из 3",
+      "page": {
+        "id": "11",
+        "name": "Страница 2 из 3",
+        "images": ""
+      },
+      "description": "",
+      "image_before": "",
+      "video_before": "",
+      "images": "",
+      "type": "number",
+      "sort": "16",
+      "options": {
+        "min": "0",
+        "max": "50",
+        "is_required": true
+      },
+      "validation": ""
+    },
+    {
+      "title": "Комментарии к лекции",
+      "group": "Страница 2 из 3",
+      "page": {
+        "id": "11",
+        "name": "Страница 2 из 3",
+        "images": ""
+      },
+      "description": "",
+      "image_before": "",
+      "video_before": "",
+      "images": "",
+      "type": "number",
+      "sort": "17",
+      "options": {
+        "min": "0",
+        "max": "50",
+        "is_required": true
+      },
+      "validation": ""
+    },
+    {
+      "title": "Страница 3 из 3",
+      "group": "Страница 3 из 3",
+      "page": {
+        "id": "18",
+        "name": "Страница 3 из 3",
+        "images": ""
+      },
+      "description": "",
+      "image_before": "",
+      "video_before": "",
+      "images": "",
+      "type": "page-descriptor",
+      "sort": "18",
+      "options": [],
+      "validation": ""
+    },
+    {
+      "title": "Эмоциональность",
+      "group": "Страница 3 из 3",
+      "page": {
+        "id": "18",
+        "name": "Страница 3 из 3",
+        "images": ""
+      },
+      "description": "",
+      "image_before": "",
+      "video_before": "",
+      "images": "",
+      "type": "number",
+      "sort": "19",
+      "options": {
+        "min": "1",
+        "max": "10",
+        "is_required": true
+      },
+      "validation": ""
+    },
+    {
+      "title": "Убедительность",
+      "group": "Страница 3 из 3",
+      "page": {
+        "id": "18",
+        "name": "Страница 3 из 3",
+        "images": ""
+      },
+      "description": "",
+      "image_before": "",
+      "video_before": "",
+      "images": "",
+      "type": "number",
+      "sort": "20",
+      "options": {
+        "min": "1",
+        "max": "10",
+        "is_required": true
+      },
+      "validation": ""
+    },
+	//////////////////////////////////////////////////////////////// Вот это как в макете надо сделать
+    {
+      "title": "Упоминался ли бренд продукта",
+      "group": "Страница 3 из 3",
+      "page": {
+        "id": "18",
+        "name": "Страница 3 из 3",
+        "images": ""
+      },
+      "description": "",
+      "image_before": "",
+      "video_before": "",
+      "images": "",
+      "type": "brand-mention",
+      "sort": "21",
+      "options": {
+        "values": [
+          "Ребагит",
+          "Урсосан",
+          "Итомед",
+          "Моносан",
+          "Селцинк",
+          "Спазмекс",
+          "Индап",
+          "Пропанорм",
+          "Просульпин",
+          "Нитремед"
+        ],
+        "is_right": "undefined",
+        "right_values_count": 0,
+        "multiple": 0,
+        "is_required": true
+      },
+      "validation": ""
+    },
+	//////////////////////////////////////////////////////////////// Вот это надо сделать 
+    {
+      "title": "Наличие вопросов к лектору",
+      "group": "Страница 3 из 3",
+      "page": {
+        "id": "18",
+        "name": "Страница 3 из 3",
+        "images": ""
+      },
+      "description": "",
+      "image_before": "",
+      "video_before": "",
+      "images": "",
+      "type": "yesno-with-input",
+      "sort": "22",
+      "options": {
+        "is_required": true,
+        "show_input_on": "yes"
+      },
+      "validation": ""
+    },
+    {
+      "title": "Сумел ли лектор ответить на вопросы с учётом интересов компании",
+      "group": "Страница 3 из 3",
+      "page": {
+        "id": "18",
+        "name": "Страница 3 из 3",
+        "images": ""
+      },
+      "description": "",
+      "image_before": "",
+      "video_before": "",
+      "images": "",
+      "type": "number",
+      "sort": "23",
+      "options": {
+        "min": "1",
+        "max": "10",
+        "is_required": true
+      },
+      "validation": ""
+    },
+    {
+      "title": "Общее фото зала",
+      "group": "Страница 3 из 3",
+      "page": {
+        "id": "18",
+        "name": "Страница 3 из 3",
+        "images": ""
+      },
+      "description": "",
+      "image_before": "",
+      "video_before": "",
+      "images": "",
+      "type": "photo",
+      "sort": "24",
+      "options": {
+        "width": "",
+        "height": "",
+        "is_no_data": false,
+        "is_required": true
+      },
+      "validation": ""
+    },
+    {
+      "title": "Спасибо, результаты приняты!",
+      "description": " ",
+      "type": "finally-text"
+    }
+  ],
+  "image": "files//1674834795-top-fon-com-p-fon-dlya-prezentatsii-trening-111-1679996580.png",
+  "hide": "1",
+  "random": "0",
+  "random_answers": "0",
+  "duration_min": "180",
+  "updated_at": {
+    "date": "2023-04-06 11:54:55.000000",
+    "timezone_type": 3,
+    "timezone": "UTC"
+  }
+}

@@ -1,0 +1,847 @@
+diff --git a/node_modules/react-native-youtube/YouTube.android.js b/node_modules/react-native-youtube/YouTube.android.js
+index 0430b71..687ed75 100644
+--- a/node_modules/react-native-youtube/YouTube.android.js
++++ b/node_modules/react-native-youtube/YouTube.android.js
+@@ -1,230 +1,230 @@
+ import React from 'react';
+ import PropTypes from 'prop-types';
+ import ReactNative, {
+-  View,
+-  ViewPropTypes,
+-  Text,
+-  StyleSheet,
+-  requireNativeComponent,
+-  UIManager,
+-  NativeModules,
+-  BackHandler,
++    View,
++    ViewPropTypes,
++    Text,
++    StyleSheet,
++    requireNativeComponent,
++    UIManager,
++    NativeModules,
++    BackHandler,
+ } from 'react-native';
+ 
+ const RCTYouTube = requireNativeComponent('ReactYouTube', YouTube, {
+-  nativeOnly: {
+-    onYouTubeError: true,
+-    onYouTubeErrorReady: true,
+-    onYouTubeErrorChangeState: true,
+-    onYouTubeErrorChangeQuality: true,
+-    onYouTubeChangeFullscreen: true,
+-  },
++    nativeOnly: {
++        onYouTubeError: true,
++        onYouTubeErrorReady: true,
++        onYouTubeErrorChangeState: true,
++        onYouTubeErrorChangeQuality: true,
++        onYouTubeChangeFullscreen: true,
++    },
+ });
+ 
+ export default class YouTube extends React.Component {
+-  static propTypes = {
+-    apiKey: PropTypes.string.isRequired,
+-    videoId: PropTypes.string,
+-    videoIds: PropTypes.arrayOf(PropTypes.string),
+-    playlistId: PropTypes.string,
+-    play: PropTypes.bool,
+-    loop: PropTypes.bool,
+-    fullscreen: PropTypes.bool,
+-    controls: PropTypes.oneOf([0, 1, 2]),
+-    showFullscreenButton: PropTypes.bool,
+-    resumePlayAndroid: PropTypes.bool,
+-    onError: PropTypes.func,
+-    onReady: PropTypes.func,
+-    onChangeState: PropTypes.func,
+-    onChangeQuality: PropTypes.func,
+-    onChangeFullscreen: PropTypes.func,
+-    style: ViewPropTypes.style,
+-  };
+-
+-  static defaultProps = {
+-    showFullscreenButton: true,
+-    resumePlayAndroid: true,
+-  };
+-
+-  _interval = null;
+-
+-  _nativeComponentRef = React.createRef();
+-
+-  constructor(props) {
+-    super(props);
+-
+-    BackHandler.addEventListener('hardwareBackPress', this._backPress);
+-
+-    this.state = {
+-      fullscreen: props.fullscreen,
+-      resizingHackFlag: false,
++    static propTypes = {
++        apiKey: PropTypes.string.isRequired,
++        videoId: PropTypes.string,
++        videoIds: PropTypes.arrayOf(PropTypes.string),
++        playlistId: PropTypes.string,
++        play: PropTypes.bool,
++        loop: PropTypes.bool,
++        fullscreen: PropTypes.bool,
++        controls: PropTypes.oneOf([0, 1, 2]),
++        showFullscreenButton: PropTypes.bool,
++        resumePlayAndroid: PropTypes.bool,
++        onError: PropTypes.func,
++        onReady: PropTypes.func,
++        onChangeState: PropTypes.func,
++        onChangeQuality: PropTypes.func,
++        onChangeFullscreen: PropTypes.func,
++        style: PropTypes.object,
+     };
+-  }
+ 
+-  componentDidMount() {
+-    // Make sure the Loading indication is displayed so use this hack before the video loads
+-    this._fireResizingHack();
+-  }
++    static defaultProps = {
++        showFullscreenButton: true,
++        resumePlayAndroid: true,
++    };
++
++    _interval = null;
++
++    _nativeComponentRef = React.createRef();
+ 
+-  componentDidUpdate(prevProps) {
+-    // Translate next `fullscreen` prop to state
+-    if (prevProps.fullscreen !== this.props.fullscreen) {
+-      this.setState({ fullscreen: this.props.fullscreen });
++    constructor(props) {
++        super(props);
++
++        BackHandler.addEventListener('hardwareBackPress', this._backPress);
++
++        this.state = {
++            fullscreen: props.fullscreen,
++            resizingHackFlag: false,
++        };
+     }
+-  }
+ 
+-  componentWillUnmount() {
+-    BackHandler.removeEventListener('hardwareBackPress', this._backPress);
++    componentDidMount() {
++        // Make sure the Loading indication is displayed so use this hack before the video loads
++        this._fireResizingHack();
++    }
+ 
+-    clearInterval(this._timeout);
+-  }
++    componentDidUpdate(prevProps) {
++        // Translate next `fullscreen` prop to state
++        if (prevProps.fullscreen !== this.props.fullscreen) {
++            this.setState({ fullscreen: this.props.fullscreen });
++        }
++    }
+ 
+-  // The Android YouTube native module is pretty problematic when it comes to mounting correctly
+-  // and rendering inside React-Native's views hierarchy. For now we must trigger some layout
+-  // changes to force a real render on it so it will respotision it's controls after several
+-  // specific events
+-  _fireResizingHack() {
+-    clearInterval(this._timeout);
++    componentWillUnmount() {
++        BackHandler.removeEventListener('hardwareBackPress', this._backPress);
+ 
+-    let wait = 0.2;
++        clearInterval(this._timeout);
++    }
+ 
+-    const next = () => {
+-      this.setState((state) => ({ resizingHackFlag: !state.resizingHackFlag }));
++    // The Android YouTube native module is pretty problematic when it comes to mounting correctly
++    // and rendering inside React-Native's views hierarchy. For now we must trigger some layout
++    // changes to force a real render on it so it will respotision it's controls after several
++    // specific events
++    _fireResizingHack() {
++        clearInterval(this._timeout);
+ 
+-      wait = wait >= 1.5 ? 1.5 : wait * 1.4;
+-      this._timeout = setTimeout(next, wait * 1000);
+-    };
++        let wait = 0.2;
+ 
+-    next();
+-  }
++        const next = () => {
++            this.setState((state) => ({ resizingHackFlag: !state.resizingHackFlag }));
+ 
+-  _backPress = () => {
+-    if (this.state.fullscreen) {
+-      this.setState({ fullscreen: false });
++            wait = wait >= 1.5 ? 1.5 : wait * 1.4;
++            this._timeout = setTimeout(next, wait * 1000);
++        };
+ 
+-      return true;
++        next();
+     }
+ 
+-    return false;
+-  };
++    _backPress = () => {
++        if (this.state.fullscreen) {
++            this.setState({ fullscreen: false });
+ 
+-  _onLayout = () => {
+-    // When the Native player changes it's layout, we should also force a resizing hack to make
+-    // sure the controls are in their correct place
+-    this._fireResizingHack();
+-  };
++            return true;
++        }
+ 
+-  _onError = (event) => {
+-    if (this.props.onError) {
+-      this.props.onError(event.nativeEvent);
+-    }
+-  };
++        return false;
++    };
++
++    _onLayout = () => {
++        // When the Native player changes it's layout, we should also force a resizing hack to make
++        // sure the controls are in their correct place
++        this._fireResizingHack();
++    };
++
++    _onError = (event) => {
++        if (this.props.onError) {
++            this.props.onError(event.nativeEvent);
++        }
++    };
++
++    _onReady = (event) => {
++        this._fireResizingHack();
++
++        if (this.props.onReady) {
++            this.props.onReady(event.nativeEvent);
++        }
++    };
+ 
+-  _onReady = (event) => {
+-    this._fireResizingHack();
++    _onChangeState = (event) => {
++        if (this.props.onChangeState) {
++            this.props.onChangeState(event.nativeEvent);
++        }
++    };
++
++    _onChangeQuality = (event) => {
++        if (this.props.onChangeQuality) {
++            this.props.onChangeQuality(event.nativeEvent);
++        }
++    };
++
++    _onChangeFullscreen = (event) => {
++        const { isFullscreen } = event.nativeEvent;
++        if (this.state.fullscreen !== isFullscreen) {
++            this.setState({ fullscreen: isFullscreen });
++        }
++
++        if (this.props.onChangeFullscreen) {
++            this.props.onChangeFullscreen(event.nativeEvent);
++        }
++    };
+ 
+-    if (this.props.onReady) {
+-      this.props.onReady(event.nativeEvent);
++    seekTo(seconds) {
++        UIManager.dispatchViewManagerCommand(
++            ReactNative.findNodeHandle(this._nativeComponentRef.current),
++            UIManager.getViewManagerConfig('ReactYouTube').Commands.seekTo,
++            [parseInt(seconds, 10)],
++        );
+     }
+-  };
+ 
+-  _onChangeState = (event) => {
+-    if (this.props.onChangeState) {
+-      this.props.onChangeState(event.nativeEvent);
++    nextVideo() {
++        UIManager.dispatchViewManagerCommand(
++            ReactNative.findNodeHandle(this._nativeComponentRef.current),
++            UIManager.getViewManagerConfig('ReactYouTube').Commands.nextVideo,
++            [],
++        );
+     }
+-  };
+ 
+-  _onChangeQuality = (event) => {
+-    if (this.props.onChangeQuality) {
+-      this.props.onChangeQuality(event.nativeEvent);
++    previousVideo() {
++        UIManager.dispatchViewManagerCommand(
++            ReactNative.findNodeHandle(this._nativeComponentRef.current),
++            UIManager.getViewManagerConfig('ReactYouTube').Commands.previousVideo,
++            [],
++        );
+     }
+-  };
+ 
+-  _onChangeFullscreen = (event) => {
+-    const { isFullscreen } = event.nativeEvent;
+-    if (this.state.fullscreen !== isFullscreen) {
+-      this.setState({ fullscreen: isFullscreen });
++    playVideoAt(index) {
++        UIManager.dispatchViewManagerCommand(
++            ReactNative.findNodeHandle(this._nativeComponentRef.current),
++            UIManager.getViewManagerConfig('ReactYouTube').Commands.playVideoAt,
++            [parseInt(index, 10)],
++        );
+     }
+ 
+-    if (this.props.onChangeFullscreen) {
+-      this.props.onChangeFullscreen(event.nativeEvent);
++    getVideosIndex = () =>
++        NativeModules.YouTubeModule.getVideosIndex(
++            ReactNative.findNodeHandle(this._nativeComponentRef.current),
++        );
++
++    getCurrentTime = () =>
++        NativeModules.YouTubeModule.getCurrentTime(
++            ReactNative.findNodeHandle(this._nativeComponentRef.current),
++        );
++
++    getDuration = () =>
++        NativeModules.YouTubeModule.getDuration(
++            ReactNative.findNodeHandle(this._nativeComponentRef.current),
++        );
++
++    render() {
++        return (
++            <View onLayout={this._onLayout} style={[styles.container, this.props.style]}>
++                <RCTYouTube
++                    ref={this._nativeComponentRef}
++                    {...this.props}
++                    fullscreen={this.state.fullscreen}
++                    style={[
++                        styles.module,
++                        { marginRight: this.state.resizingHackFlag ? StyleSheet.hairlineWidth : 0 },
++                    ]}
++                    onYouTubeError={this._onError}
++                    onYouTubeReady={this._onReady}
++                    onYouTubeChangeState={this._onChangeState}
++                    onYouTubeChangeQuality={this._onChangeQuality}
++                    onYouTubeChangeFullscreen={this._onChangeFullscreen}
++                />
++            </View>
++        );
+     }
+-  };
+-
+-  seekTo(seconds) {
+-    UIManager.dispatchViewManagerCommand(
+-      ReactNative.findNodeHandle(this._nativeComponentRef.current),
+-      UIManager.getViewManagerConfig('ReactYouTube').Commands.seekTo,
+-      [parseInt(seconds, 10)],
+-    );
+-  }
+-
+-  nextVideo() {
+-    UIManager.dispatchViewManagerCommand(
+-      ReactNative.findNodeHandle(this._nativeComponentRef.current),
+-      UIManager.getViewManagerConfig('ReactYouTube').Commands.nextVideo,
+-      [],
+-    );
+-  }
+-
+-  previousVideo() {
+-    UIManager.dispatchViewManagerCommand(
+-      ReactNative.findNodeHandle(this._nativeComponentRef.current),
+-      UIManager.getViewManagerConfig('ReactYouTube').Commands.previousVideo,
+-      [],
+-    );
+-  }
+-
+-  playVideoAt(index) {
+-    UIManager.dispatchViewManagerCommand(
+-      ReactNative.findNodeHandle(this._nativeComponentRef.current),
+-      UIManager.getViewManagerConfig('ReactYouTube').Commands.playVideoAt,
+-      [parseInt(index, 10)],
+-    );
+-  }
+-
+-  getVideosIndex = () =>
+-    NativeModules.YouTubeModule.getVideosIndex(
+-      ReactNative.findNodeHandle(this._nativeComponentRef.current),
+-    );
+-
+-  getCurrentTime = () =>
+-    NativeModules.YouTubeModule.getCurrentTime(
+-      ReactNative.findNodeHandle(this._nativeComponentRef.current),
+-    );
+-
+-  getDuration = () =>
+-    NativeModules.YouTubeModule.getDuration(
+-      ReactNative.findNodeHandle(this._nativeComponentRef.current),
+-    );
+-
+-  render() {
+-    return (
+-      <View onLayout={this._onLayout} style={[styles.container, this.props.style]}>
+-        <RCTYouTube
+-          ref={this._nativeComponentRef}
+-          {...this.props}
+-          fullscreen={this.state.fullscreen}
+-          style={[
+-            styles.module,
+-            { marginRight: this.state.resizingHackFlag ? StyleSheet.hairlineWidth : 0 },
+-          ]}
+-          onYouTubeError={this._onError}
+-          onYouTubeReady={this._onReady}
+-          onYouTubeChangeState={this._onChangeState}
+-          onYouTubeChangeQuality={this._onChangeQuality}
+-          onYouTubeChangeFullscreen={this._onChangeFullscreen}
+-        />
+-      </View>
+-    );
+-  }
+ }
+ 
+ const styles = StyleSheet.create({
+-  container: {
+-    backgroundColor: 'black',
+-  },
+-  module: {
+-    flex: 1,
+-  },
++    container: {
++        backgroundColor: 'black',
++    },
++    module: {
++        flex: 1,
++    },
+ });
+diff --git a/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/results.bin b/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/results.bin
+new file mode 100644
+index 0000000..7ed749e
+--- /dev/null
++++ b/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/results.bin
+@@ -0,0 +1 @@
++o/bundleLibRuntimeToDirDebug
+diff --git a/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/BuildConfig.dex b/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/BuildConfig.dex
+new file mode 100644
+index 0000000..4cad2ce
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/BuildConfig.dex differ
+diff --git a/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/ReactNativeYouTube.dex b/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/ReactNativeYouTube.dex
+new file mode 100644
+index 0000000..0101225
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/ReactNativeYouTube.dex differ
+diff --git a/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/VideoFragment.dex b/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/VideoFragment.dex
+new file mode 100644
+index 0000000..7d9ec61
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/VideoFragment.dex differ
+diff --git a/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/YouTubeManager.dex b/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/YouTubeManager.dex
+new file mode 100644
+index 0000000..27b7ffe
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/YouTubeManager.dex differ
+diff --git a/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/YouTubeModule$1.dex b/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/YouTubeModule$1.dex
+new file mode 100644
+index 0000000..f0ccc8c
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/YouTubeModule$1.dex differ
+diff --git a/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/YouTubeModule$2.dex b/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/YouTubeModule$2.dex
+new file mode 100644
+index 0000000..7350ca9
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/YouTubeModule$2.dex differ
+diff --git a/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/YouTubeModule$3.dex b/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/YouTubeModule$3.dex
+new file mode 100644
+index 0000000..506326b
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/YouTubeModule$3.dex differ
+diff --git a/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/YouTubeModule.dex b/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/YouTubeModule.dex
+new file mode 100644
+index 0000000..e963cd7
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/YouTubeModule.dex differ
+diff --git a/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/YouTubePlayerController$1.dex b/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/YouTubePlayerController$1.dex
+new file mode 100644
+index 0000000..440ca15
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/YouTubePlayerController$1.dex differ
+diff --git a/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/YouTubePlayerController.dex b/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/YouTubePlayerController.dex
+new file mode 100644
+index 0000000..3d8eb5e
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/YouTubePlayerController.dex differ
+diff --git a/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/YouTubeStandaloneModule$1.dex b/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/YouTubeStandaloneModule$1.dex
+new file mode 100644
+index 0000000..82a92e7
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/YouTubeStandaloneModule$1.dex differ
+diff --git a/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/YouTubeStandaloneModule.dex b/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/YouTubeStandaloneModule.dex
+new file mode 100644
+index 0000000..86618e6
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/YouTubeStandaloneModule.dex differ
+diff --git a/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/YouTubeView.dex b/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/YouTubeView.dex
+new file mode 100644
+index 0000000..781492b
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/inprogress/reactnativeyoutube/YouTubeView.dex differ
+diff --git a/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/desugar_graph.bin b/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/desugar_graph.bin
+new file mode 100644
+index 0000000..2194fa7
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/transformed/bundleLibRuntimeToDirDebug/desugar_graph.bin differ
+diff --git a/node_modules/react-native-youtube/android/build/.transforms/eb8181ba2abaa82fbd5bd6d1deb9f28b/results.bin b/node_modules/react-native-youtube/android/build/.transforms/eb8181ba2abaa82fbd5bd6d1deb9f28b/results.bin
+new file mode 100644
+index 0000000..0d259dd
+--- /dev/null
++++ b/node_modules/react-native-youtube/android/build/.transforms/eb8181ba2abaa82fbd5bd6d1deb9f28b/results.bin
+@@ -0,0 +1 @@
++o/classes
+diff --git a/node_modules/react-native-youtube/android/build/.transforms/eb8181ba2abaa82fbd5bd6d1deb9f28b/transformed/classes/classes_dex/classes.dex b/node_modules/react-native-youtube/android/build/.transforms/eb8181ba2abaa82fbd5bd6d1deb9f28b/transformed/classes/classes_dex/classes.dex
+new file mode 100644
+index 0000000..0b659cd
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/.transforms/eb8181ba2abaa82fbd5bd6d1deb9f28b/transformed/classes/classes_dex/classes.dex differ
+diff --git a/node_modules/react-native-youtube/android/build/generated/source/buildConfig/debug/com/inprogress/reactnativeyoutube/BuildConfig.java b/node_modules/react-native-youtube/android/build/generated/source/buildConfig/debug/com/inprogress/reactnativeyoutube/BuildConfig.java
+new file mode 100644
+index 0000000..a916853
+--- /dev/null
++++ b/node_modules/react-native-youtube/android/build/generated/source/buildConfig/debug/com/inprogress/reactnativeyoutube/BuildConfig.java
+@@ -0,0 +1,10 @@
++/**
++ * Automatically generated file. DO NOT MODIFY
++ */
++package com.inprogress.reactnativeyoutube;
++
++public final class BuildConfig {
++  public static final boolean DEBUG = Boolean.parseBoolean("true");
++  public static final String LIBRARY_PACKAGE_NAME = "com.inprogress.reactnativeyoutube";
++  public static final String BUILD_TYPE = "debug";
++}
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/AndroidManifest.xml b/node_modules/react-native-youtube/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/AndroidManifest.xml
+new file mode 100644
+index 0000000..08d966e
+--- /dev/null
++++ b/node_modules/react-native-youtube/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/AndroidManifest.xml
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="utf-8"?>
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++    package="com.inprogress.reactnativeyoutube" >
++
++    <uses-sdk android:minSdkVersion="24" />
++
++</manifest>
+\ No newline at end of file
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/output-metadata.json b/node_modules/react-native-youtube/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/output-metadata.json
+new file mode 100644
+index 0000000..d3221e3
+--- /dev/null
++++ b/node_modules/react-native-youtube/android/build/intermediates/aapt_friendly_merged_manifests/debug/processDebugManifest/aapt/output-metadata.json
+@@ -0,0 +1,18 @@
++{
++  "version": 3,
++  "artifactType": {
++    "type": "AAPT_FRIENDLY_MERGED_MANIFESTS",
++    "kind": "Directory"
++  },
++  "applicationId": "com.inprogress.reactnativeyoutube",
++  "variantName": "debug",
++  "elements": [
++    {
++      "type": "SINGLE",
++      "filters": [],
++      "attributes": [],
++      "outputFile": "AndroidManifest.xml"
++    }
++  ],
++  "elementType": "File"
++}
+\ No newline at end of file
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/aar_metadata/debug/writeDebugAarMetadata/aar-metadata.properties b/node_modules/react-native-youtube/android/build/intermediates/aar_metadata/debug/writeDebugAarMetadata/aar-metadata.properties
+new file mode 100644
+index 0000000..1211b1e
+--- /dev/null
++++ b/node_modules/react-native-youtube/android/build/intermediates/aar_metadata/debug/writeDebugAarMetadata/aar-metadata.properties
+@@ -0,0 +1,6 @@
++aarFormatVersion=1.0
++aarMetadataVersion=1.0
++minCompileSdk=1
++minCompileSdkExtension=0
++minAndroidGradlePluginVersion=1.0.0
++coreLibraryDesugaringEnabled=false
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/annotation_processor_list/debug/javaPreCompileDebug/annotationProcessors.json b/node_modules/react-native-youtube/android/build/intermediates/annotation_processor_list/debug/javaPreCompileDebug/annotationProcessors.json
+new file mode 100644
+index 0000000..9e26dfe
+--- /dev/null
++++ b/node_modules/react-native-youtube/android/build/intermediates/annotation_processor_list/debug/javaPreCompileDebug/annotationProcessors.json
+@@ -0,0 +1 @@
++{}
+\ No newline at end of file
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar b/node_modules/react-native-youtube/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar
+new file mode 100644
+index 0000000..337f9c4
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar differ
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar b/node_modules/react-native-youtube/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar
+new file mode 100644
+index 0000000..06bd5cc
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar differ
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/compile_symbol_list/debug/generateDebugRFile/R.txt b/node_modules/react-native-youtube/android/build/intermediates/compile_symbol_list/debug/generateDebugRFile/R.txt
+new file mode 100644
+index 0000000..e3e28a4
+--- /dev/null
++++ b/node_modules/react-native-youtube/android/build/intermediates/compile_symbol_list/debug/generateDebugRFile/R.txt
+@@ -0,0 +1,2 @@
++int id relativelayout 0x0
++int layout youtube_layout 0x0
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/compiled_local_resources/debug/compileDebugLibraryResources/out/layout_youtube_layout.xml.flat b/node_modules/react-native-youtube/android/build/intermediates/compiled_local_resources/debug/compileDebugLibraryResources/out/layout_youtube_layout.xml.flat
+new file mode 100644
+index 0000000..50b8a25
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/intermediates/compiled_local_resources/debug/compileDebugLibraryResources/out/layout_youtube_layout.xml.flat differ
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties b/node_modules/react-native-youtube/android/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties
+new file mode 100644
+index 0000000..0d7cec9
+--- /dev/null
++++ b/node_modules/react-native-youtube/android/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties
+@@ -0,0 +1,2 @@
++#Fri Nov 29 13:43:23 EET 2024
++com.inprogress.reactnativeyoutube.react-native-youtube-main-6\:/layout/youtube_layout.xml=/Users/vladislavgrin/Workspace/questionnaire-main-4/node_modules/react-native-youtube/android/build/intermediates/packaged_res/debug/packageDebugResources/layout/youtube_layout.xml
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/incremental/debug/packageDebugResources/merger.xml b/node_modules/react-native-youtube/android/build/intermediates/incremental/debug/packageDebugResources/merger.xml
+new file mode 100644
+index 0000000..9cf3e5f
+--- /dev/null
++++ b/node_modules/react-native-youtube/android/build/intermediates/incremental/debug/packageDebugResources/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/vladislavgrin/Workspace/questionnaire-main-4/node_modules/react-native-youtube/android/src/main/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="main" generated-set="main$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/vladislavgrin/Workspace/questionnaire-main-4/node_modules/react-native-youtube/android/src/main/res"><file name="youtube_layout" path="/Users/vladislavgrin/Workspace/questionnaire-main-4/node_modules/react-native-youtube/android/src/main/res/layout/youtube_layout.xml" qualifiers="" type="layout"/></source></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/vladislavgrin/Workspace/questionnaire-main-4/node_modules/react-native-youtube/android/src/debug/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="debug" generated-set="debug$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/vladislavgrin/Workspace/questionnaire-main-4/node_modules/react-native-youtube/android/src/debug/res"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="generated$Generated" generated="true" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/vladislavgrin/Workspace/questionnaire-main-4/node_modules/react-native-youtube/android/build/generated/res/resValues/debug"/></dataSet><dataSet aapt-namespace="http://schemas.android.com/apk/res-auto" config="generated" generated-set="generated$Generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/vladislavgrin/Workspace/questionnaire-main-4/node_modules/react-native-youtube/android/build/generated/res/resValues/debug"/></dataSet><mergedItems/></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml b/node_modules/react-native-youtube/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
+new file mode 100644
+index 0000000..ad7bd76
+--- /dev/null
++++ b/node_modules/react-native-youtube/android/build/intermediates/incremental/mergeDebugJniLibFolders/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/vladislavgrin/Workspace/questionnaire-main-4/node_modules/react-native-youtube/android/src/main/jniLibs"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/vladislavgrin/Workspace/questionnaire-main-4/node_modules/react-native-youtube/android/src/debug/jniLibs"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/incremental/mergeDebugShaders/merger.xml b/node_modules/react-native-youtube/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
+new file mode 100644
+index 0000000..4619e9b
+--- /dev/null
++++ b/node_modules/react-native-youtube/android/build/intermediates/incremental/mergeDebugShaders/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/vladislavgrin/Workspace/questionnaire-main-4/node_modules/react-native-youtube/android/src/main/shaders"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/vladislavgrin/Workspace/questionnaire-main-4/node_modules/react-native-youtube/android/src/debug/shaders"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/incremental/packageDebugAssets/merger.xml b/node_modules/react-native-youtube/android/build/intermediates/incremental/packageDebugAssets/merger.xml
+new file mode 100644
+index 0000000..4d11493
+--- /dev/null
++++ b/node_modules/react-native-youtube/android/build/intermediates/incremental/packageDebugAssets/merger.xml
+@@ -0,0 +1,2 @@
++<?xml version="1.0" encoding="utf-8"?>
++<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/vladislavgrin/Workspace/questionnaire-main-4/node_modules/react-native-youtube/android/src/main/assets"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/vladislavgrin/Workspace/questionnaire-main-4/node_modules/react-native-youtube/android/src/debug/assets"/></dataSet><dataSet config="generated" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="/Users/vladislavgrin/Workspace/questionnaire-main-4/node_modules/react-native-youtube/android/build/intermediates/shader_assets/debug/compileDebugShaders/out"/></dataSet></merger>
+\ No newline at end of file
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/BuildConfig.class b/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/BuildConfig.class
+new file mode 100644
+index 0000000..dc8ed75
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/BuildConfig.class differ
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/ReactNativeYouTube.class b/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/ReactNativeYouTube.class
+new file mode 100644
+index 0000000..3851c01
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/ReactNativeYouTube.class differ
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/VideoFragment.class b/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/VideoFragment.class
+new file mode 100644
+index 0000000..63079b2
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/VideoFragment.class differ
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/YouTubeManager.class b/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/YouTubeManager.class
+new file mode 100644
+index 0000000..5c29cae
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/YouTubeManager.class differ
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/YouTubeModule$1.class b/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/YouTubeModule$1.class
+new file mode 100644
+index 0000000..ceea7ab
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/YouTubeModule$1.class differ
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/YouTubeModule$2.class b/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/YouTubeModule$2.class
+new file mode 100644
+index 0000000..8c38ffc
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/YouTubeModule$2.class differ
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/YouTubeModule$3.class b/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/YouTubeModule$3.class
+new file mode 100644
+index 0000000..2710105
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/YouTubeModule$3.class differ
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/YouTubeModule.class b/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/YouTubeModule.class
+new file mode 100644
+index 0000000..e827c6d
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/YouTubeModule.class differ
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/YouTubePlayerController$1.class b/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/YouTubePlayerController$1.class
+new file mode 100644
+index 0000000..7254461
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/YouTubePlayerController$1.class differ
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/YouTubePlayerController.class b/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/YouTubePlayerController.class
+new file mode 100644
+index 0000000..2671f54
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/YouTubePlayerController.class differ
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/YouTubeStandaloneModule$1.class b/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/YouTubeStandaloneModule$1.class
+new file mode 100644
+index 0000000..b0b8747
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/YouTubeStandaloneModule$1.class differ
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/YouTubeStandaloneModule.class b/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/YouTubeStandaloneModule.class
+new file mode 100644
+index 0000000..35d67b0
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/YouTubeStandaloneModule.class differ
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/YouTubeView.class b/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/YouTubeView.class
+new file mode 100644
+index 0000000..859cead
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/com/inprogress/reactnativeyoutube/YouTubeView.class differ
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/local_only_symbol_list/debug/parseDebugLocalResources/R-def.txt b/node_modules/react-native-youtube/android/build/intermediates/local_only_symbol_list/debug/parseDebugLocalResources/R-def.txt
+new file mode 100644
+index 0000000..43f8047
+--- /dev/null
++++ b/node_modules/react-native-youtube/android/build/intermediates/local_only_symbol_list/debug/parseDebugLocalResources/R-def.txt
+@@ -0,0 +1,4 @@
++R_DEF: Internal format may change without notice
++local
++id relativelayout
++layout youtube_layout
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/manifest_merge_blame_file/debug/processDebugManifest/manifest-merger-blame-debug-report.txt b/node_modules/react-native-youtube/android/build/intermediates/manifest_merge_blame_file/debug/processDebugManifest/manifest-merger-blame-debug-report.txt
+new file mode 100644
+index 0000000..c777906
+--- /dev/null
++++ b/node_modules/react-native-youtube/android/build/intermediates/manifest_merge_blame_file/debug/processDebugManifest/manifest-merger-blame-debug-report.txt
+@@ -0,0 +1,7 @@
++1<?xml version="1.0" encoding="utf-8"?>
++2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++3    package="com.inprogress.reactnativeyoutube" >
++4
++5    <uses-sdk android:minSdkVersion="24" />
++6
++7</manifest>
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml b/node_modules/react-native-youtube/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml
+new file mode 100644
+index 0000000..08d966e
+--- /dev/null
++++ b/node_modules/react-native-youtube/android/build/intermediates/merged_manifest/debug/processDebugManifest/AndroidManifest.xml
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="utf-8"?>
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++    package="com.inprogress.reactnativeyoutube" >
++
++    <uses-sdk android:minSdkVersion="24" />
++
++</manifest>
+\ No newline at end of file
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/navigation_json/debug/extractDeepLinksDebug/navigation.json b/node_modules/react-native-youtube/android/build/intermediates/navigation_json/debug/extractDeepLinksDebug/navigation.json
+new file mode 100644
+index 0000000..0637a08
+--- /dev/null
++++ b/node_modules/react-native-youtube/android/build/intermediates/navigation_json/debug/extractDeepLinksDebug/navigation.json
+@@ -0,0 +1 @@
++[]
+\ No newline at end of file
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/nested_resources_validation_report/debug/generateDebugResources/nestedResourcesValidationReport.txt b/node_modules/react-native-youtube/android/build/intermediates/nested_resources_validation_report/debug/generateDebugResources/nestedResourcesValidationReport.txt
+new file mode 100644
+index 0000000..08f4ebe
+--- /dev/null
++++ b/node_modules/react-native-youtube/android/build/intermediates/nested_resources_validation_report/debug/generateDebugResources/nestedResourcesValidationReport.txt
+@@ -0,0 +1 @@
++0 Warning/Error
+\ No newline at end of file
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/packaged_res/debug/packageDebugResources/layout/youtube_layout.xml b/node_modules/react-native-youtube/android/build/intermediates/packaged_res/debug/packageDebugResources/layout/youtube_layout.xml
+new file mode 100644
+index 0000000..384d74b
+--- /dev/null
++++ b/node_modules/react-native-youtube/android/build/intermediates/packaged_res/debug/packageDebugResources/layout/youtube_layout.xml
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="utf-8"?>
++<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
++    android:id="@+id/relativelayout"
++    android:layout_width="match_parent"
++    android:layout_height="match_parent">
++
++</RelativeLayout>
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/BuildConfig.class b/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/BuildConfig.class
+new file mode 100644
+index 0000000..dc8ed75
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/BuildConfig.class differ
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/ReactNativeYouTube.class b/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/ReactNativeYouTube.class
+new file mode 100644
+index 0000000..3851c01
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/ReactNativeYouTube.class differ
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/VideoFragment.class b/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/VideoFragment.class
+new file mode 100644
+index 0000000..63079b2
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/VideoFragment.class differ
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/YouTubeManager.class b/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/YouTubeManager.class
+new file mode 100644
+index 0000000..5c29cae
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/YouTubeManager.class differ
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/YouTubeModule$1.class b/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/YouTubeModule$1.class
+new file mode 100644
+index 0000000..ceea7ab
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/YouTubeModule$1.class differ
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/YouTubeModule$2.class b/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/YouTubeModule$2.class
+new file mode 100644
+index 0000000..8c38ffc
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/YouTubeModule$2.class differ
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/YouTubeModule$3.class b/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/YouTubeModule$3.class
+new file mode 100644
+index 0000000..2710105
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/YouTubeModule$3.class differ
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/YouTubeModule.class b/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/YouTubeModule.class
+new file mode 100644
+index 0000000..e827c6d
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/YouTubeModule.class differ
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/YouTubePlayerController$1.class b/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/YouTubePlayerController$1.class
+new file mode 100644
+index 0000000..7254461
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/YouTubePlayerController$1.class differ
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/YouTubePlayerController.class b/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/YouTubePlayerController.class
+new file mode 100644
+index 0000000..2671f54
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/YouTubePlayerController.class differ
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/YouTubeStandaloneModule$1.class b/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/YouTubeStandaloneModule$1.class
+new file mode 100644
+index 0000000..b0b8747
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/YouTubeStandaloneModule$1.class differ
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/YouTubeStandaloneModule.class b/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/YouTubeStandaloneModule.class
+new file mode 100644
+index 0000000..35d67b0
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/YouTubeStandaloneModule.class differ
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/YouTubeView.class b/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/YouTubeView.class
+new file mode 100644
+index 0000000..859cead
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/inprogress/reactnativeyoutube/YouTubeView.class differ
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar b/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar
+new file mode 100644
+index 0000000..d7303f2
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar differ
+diff --git a/node_modules/react-native-youtube/android/build/intermediates/symbol_list_with_package_name/debug/generateDebugRFile/package-aware-r.txt b/node_modules/react-native-youtube/android/build/intermediates/symbol_list_with_package_name/debug/generateDebugRFile/package-aware-r.txt
+new file mode 100644
+index 0000000..600548a
+--- /dev/null
++++ b/node_modules/react-native-youtube/android/build/intermediates/symbol_list_with_package_name/debug/generateDebugRFile/package-aware-r.txt
+@@ -0,0 +1,3 @@
++com.inprogress.reactnativeyoutube
++id relativelayout
++layout youtube_layout
+diff --git a/node_modules/react-native-youtube/android/build/outputs/logs/manifest-merger-debug-report.txt b/node_modules/react-native-youtube/android/build/outputs/logs/manifest-merger-debug-report.txt
+new file mode 100644
+index 0000000..545c802
+--- /dev/null
++++ b/node_modules/react-native-youtube/android/build/outputs/logs/manifest-merger-debug-report.txt
+@@ -0,0 +1,17 @@
++-- Merging decision tree log ---
++manifest
++ADDED from /Users/vladislavgrin/Workspace/questionnaire-main-4/node_modules/react-native-youtube/android/src/main/AndroidManifest.xml:1:1-4:12
++INJECTED from /Users/vladislavgrin/Workspace/questionnaire-main-4/node_modules/react-native-youtube/android/src/main/AndroidManifest.xml:1:1-4:12
++	package
++		ADDED from /Users/vladislavgrin/Workspace/questionnaire-main-4/node_modules/react-native-youtube/android/src/main/AndroidManifest.xml:2:5-48
++		INJECTED from /Users/vladislavgrin/Workspace/questionnaire-main-4/node_modules/react-native-youtube/android/src/main/AndroidManifest.xml
++	xmlns:android
++		ADDED from /Users/vladislavgrin/Workspace/questionnaire-main-4/node_modules/react-native-youtube/android/src/main/AndroidManifest.xml:1:11-69
++uses-sdk
++INJECTED from /Users/vladislavgrin/Workspace/questionnaire-main-4/node_modules/react-native-youtube/android/src/main/AndroidManifest.xml reason: use-sdk injection requested
++INJECTED from /Users/vladislavgrin/Workspace/questionnaire-main-4/node_modules/react-native-youtube/android/src/main/AndroidManifest.xml
++INJECTED from /Users/vladislavgrin/Workspace/questionnaire-main-4/node_modules/react-native-youtube/android/src/main/AndroidManifest.xml
++	android:targetSdkVersion
++		INJECTED from /Users/vladislavgrin/Workspace/questionnaire-main-4/node_modules/react-native-youtube/android/src/main/AndroidManifest.xml
++	android:minSdkVersion
++		INJECTED from /Users/vladislavgrin/Workspace/questionnaire-main-4/node_modules/react-native-youtube/android/src/main/AndroidManifest.xml
+diff --git a/node_modules/react-native-youtube/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin b/node_modules/react-native-youtube/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin
+new file mode 100644
+index 0000000..0f5e60e
+Binary files /dev/null and b/node_modules/react-native-youtube/android/build/tmp/compileDebugJavaWithJavac/previous-compilation-data.bin differ
