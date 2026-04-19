@@ -2,8 +2,6 @@ workflows:
   ios-testflight:
     name: iOS TestFlight
     max_build_duration: 120
-    integrations:
-      app_store_connect: com.pro.med
     environment:
       xcode: latest
       cocoapods: default
@@ -13,8 +11,6 @@ workflows:
           - pro_med_profile_2026
         certificates:
           - pro_med_dist_2026
-      groups:
-        - app_store_credentials
       vars:
         XCODE_WORKSPACE: "ios/questionnaire.xcworkspace"
         XCODE_SCHEME: "questionnaire"
@@ -51,7 +47,4 @@ workflows:
       - /tmp/xcodebuild_logs/*.log
       - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
 
-    publishing:
-      app_store_connect:
-        auth: integration
-        submit_to_testflight: true
+
