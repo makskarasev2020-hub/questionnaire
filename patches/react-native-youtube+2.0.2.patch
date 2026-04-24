@@ -422,6 +422,26 @@ index 0430b71..687ed75 100644
 +        flex: 1,
 +    },
  });
+diff --git a/node_modules/react-native-youtube/YouTube.ios.js b/node_modules/react-native-youtube/YouTube.ios.js
+index 0000001..0000002 100644
+--- a/node_modules/react-native-youtube/YouTube.ios.js
++++ b/node_modules/react-native-youtube/YouTube.ios.js
+@@ -1,5 +1,5 @@
+ import React from 'react';
+ import PropTypes from 'prop-types';
+-import ReactNative, { requireNativeComponent, NativeModules, ViewPropTypes } from 'react-native';
++import ReactNative, { requireNativeComponent, NativeModules } from 'react-native';
+ 
+ const RCTYouTube = requireNativeComponent('RCTYouTube', null);
+@@ -53,7 +53,7 @@ export default class YouTube extends React.Component {
+     onChangeQuality: PropTypes.func,
+     onChangeFullscreen: PropTypes.func,
+     onProgress: PropTypes.func,
+-    style: ViewPropTypes.style,
++    style: PropTypes.object,
+   };
+ 
+   constructor(props) {
 diff --git a/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/results.bin b/node_modules/react-native-youtube/android/build/.transforms/8c535de76da885f3cce18b5de67ad338/results.bin
 new file mode 100644
 index 0000000..7ed749e
