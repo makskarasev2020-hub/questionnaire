@@ -90,6 +90,9 @@ const QuestionInput = props => {
                             {
                                 height: props.multiline ? 90 : 50,
                                 borderBottomColor: ThemeConstants[theme].borderColor,
+                                ...(Platform.OS === 'ios' && !props.multiline
+                                    ? { paddingTop: 20, paddingBottom: 6 }
+                                    : {}),
                             },
                         ]}
                     />
