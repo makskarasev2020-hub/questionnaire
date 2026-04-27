@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
         borderBottomColor: '#ee6e73',
         borderBottomWidth: 1,
         width: '100%',
-        paddingVertical: 10,
+        paddingVertical: 0,
         textAlignVertical: 'center',
         fontSize: 18,
         color: light ? 'rgba(255,255,255, 0.8)' : '#000',
