@@ -15,8 +15,33 @@ import {
 } from '../../action-types';
 import { getRenderItem, splitIntoFolders } from '../../../utils/question';
 
+import { Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import httpClient from '../../../httpClient';
+
+const BASE_IMAGE_URL = 'https://promedcs.ursosan.ru/';
+
+const prefetchQuestionImages = (questionnaires) => {
+    if (!questionnaires || !Array.isArray(questionnaires)) return;
+    const urls = new Set();
+    questionnaires.forEach(q => {
+        if (q.icon) urls.add(`${BASE_IMAGE_URL}${q.icon}`);
+        if (q.image) urls.add(`${BASE_IMAGE_URL}${q.image}`);
+        if (q.images) urls.add(`${BASE_IMAGE_URL}${q.images}`);
+        if (q.questions && Array.isArray(q.questions)) {
+            q.questions.forEach(question => {
+                if (question.images) urls.add(`${BASE_IMAGE_URL}${question.images}`);
+                if (question.image_before) {
+                    question.image_before.split(',').forEach(img => {
+                        const trimmed = img.trim();
+                        if (trimmed) urls.add(`${BASE_IMAGE_URL}${trimmed}`);
+                    });
+                }
+            });
+        }
+    });
+    urls.forEach(url => Image.prefetch(url).catch(() => {}));
+};
 
 // Загрузка всех опросников (с поддержкой кэша для оффлайна)
 export const loadQuestionAll = () => (dispatch, getState) => {
@@ -36,6 +61,8 @@ export const loadQuestionAll = () => (dispatch, getState) => {
                 'questionData',
                 JSON.stringify(res.data.questionnaires),
             );
+
+            prefetchQuestionImages(res.data.questionnaires);
         })
         .catch(err => {
             AsyncStorage.getItem('questionData').then(data => {
@@ -60,6 +87,7 @@ export const loadQuestion =
                 .then(res => {
                     dispatch(saveQuestionData({ data: res.data.questionnaires, id }));
                     cb(res.data.questionnaires);
+                    prefetchQuestionImages(res.data.questionnaires);
                 })
                 .catch(err => {
                     console.log(err);

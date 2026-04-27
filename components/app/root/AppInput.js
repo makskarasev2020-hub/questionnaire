@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     input: {
         height: 40,
         width: '100%',
-        paddingVertical: 0,
+        ...Platform.select({ android: { paddingVertical: 0 }, ios: {} }),
         textAlignVertical: 'center',
 
         borderBottomWidth: 1,

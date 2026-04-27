@@ -1,7 +1,7 @@
 import * as yup from 'yup';
 
 import React, { createRef, useContext, useEffect } from 'react';
-import { StyleSheet, TextInput, Text } from 'react-native';
+import { StyleSheet, TextInput, Text, Platform } from 'react-native';
 
 import { Formik } from 'formik';
 import QuestionContent from './root/QuestionContainer';
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
         borderBottomColor: '#ee6e73',
         borderBottomWidth: 1,
         width: '100%',
-        paddingVertical: 0,
+        ...Platform.select({ android: { paddingVertical: 0 }, ios: {} }),
         textAlignVertical: 'center',
         fontSize: 18,
         color: light ? 'rgba(255,255,255, 0.8)' : '#000',
