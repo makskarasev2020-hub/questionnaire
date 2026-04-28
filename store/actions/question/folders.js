@@ -3,8 +3,19 @@ import {
     SAVE_QUESTION_FOLDER_LOADING,
 } from '../../action-types';
 
+import { Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import httpClient from '../../../httpClient';
+
+const BASE_IMAGE_URL = 'https://promedcs.ursosan.ru/';
+
+const prefetchFolderImages = (folders) => {
+    if (!folders || !Array.isArray(folders)) return;
+    folders.forEach(f => {
+        if (f.icon) Image.prefetch(`${BASE_IMAGE_URL}${f.icon}`).catch(() => {});
+        if (f.image) Image.prefetch(`${BASE_IMAGE_URL}${f.image}`).catch(() => {});
+    });
+};
 
 export const loadFolder = () => (dispatch, getState) => {
     const {
@@ -28,6 +39,7 @@ export const loadFolder = () => (dispatch, getState) => {
 
                 dispatch(saveQuestionFolderData(res.data.folders));
                 AsyncStorage.setItem('folders', JSON.stringify(res.data.folders));
+                prefetchFolderImages(res.data.folders);
             }
         })
         .catch(err => {
