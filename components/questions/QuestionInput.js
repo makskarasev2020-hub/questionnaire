@@ -87,13 +87,18 @@ const QuestionInput = props => {
                         onBlur={formikProps.handleBlur(typeSchema)}
                         style={[
                             StyleSheet.flatten(styles.input(props.isLight)),
-                            {
-                                height: props.multiline ? 90 : 50,
-                                borderBottomColor: ThemeConstants[theme].borderColor,
-                                ...(Platform.OS === 'ios' && !props.multiline
-                                    ? { paddingTop: 40, paddingBottom: 0 }
-                                    : {}),
-                            },
+                            Platform.OS === 'ios' && !props.multiline
+                                ? {
+                                    height: undefined,
+                                    minHeight: 44,
+                                    paddingTop: 12,
+                                    paddingBottom: 10,
+                                    borderBottomColor: ThemeConstants[theme].borderColor,
+                                }
+                                : {
+                                    height: props.multiline ? 90 : 50,
+                                    borderBottomColor: ThemeConstants[theme].borderColor,
+                                },
                         ]}
                     />
                 </QuestionContent>

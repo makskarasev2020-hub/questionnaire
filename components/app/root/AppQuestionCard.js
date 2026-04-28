@@ -18,10 +18,12 @@ const AppQuestionCard = ({
     return (
         <View style={styles.container}>
             <Image
-                source={{
-                    uri: imageUrl,
-                    ...(Platform.OS === 'ios' ? { cache: 'force-cache' } : {}),
-                }}
+                source={imageUrl
+                    ? {
+                        uri: imageUrl,
+                        ...(Platform.OS === 'ios' ? { cache: 'force-cache' } : {}),
+                    }
+                    : require('../../../assets/images/icon.png')}
                 resizeMode="contain"
                 style={styles.image}
             />
