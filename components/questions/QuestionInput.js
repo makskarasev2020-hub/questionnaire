@@ -89,7 +89,9 @@ const QuestionInput = props => {
                             StyleSheet.flatten(styles.input(props.isLight)),
                             props.multiline
                                 ? {
-                                    height: 90,
+                                    height: undefined,
+                                    minHeight: 30,
+                                    paddingVertical: 0,
                                     textAlignVertical: 'top',
                                     borderBottomColor: ThemeConstants[theme].borderColor,
                                 }
