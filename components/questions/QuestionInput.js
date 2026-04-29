@@ -92,12 +92,12 @@ const QuestionInput = props => {
                             onBlur={formikProps.handleBlur(typeSchema)}
                             style={{
                                 fontSize: 18,
-                                paddingVertical: 2,
+                                paddingVertical: 0,
                                 paddingHorizontal: 0,
                                 color: props.isLight ? 'rgba(255,255,255, 0.8)' : '#000',
                                 textAlignVertical: props.multiline ? 'top' : 'center',
                                 width: '100%',
-                                ...(props.multiline ? { minHeight: 30 } : {}),
+                                ...(props.multiline ? { minHeight: 30, paddingVertical: 2 } : { height: 30 }),
                             }}
                         />
                     </View>

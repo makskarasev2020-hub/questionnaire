@@ -1,7 +1,11 @@
-import RNFS from 'react-native-fs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const CACHE_DIR = `${RNFS.DocumentDirectoryPath}/img_cache`;
+let RNFS = null;
+try {
+    RNFS = require('react-native-fs');
+} catch {}
+
+const getCacheDir = () => RNFS ? `${RNFS.DocumentDirectoryPath}/img_cache` : null;
 const CACHE_INDEX_KEY = 'img_cache_index_v1';
 
 let cacheIndex = {};
@@ -19,21 +23,36 @@ const urlToFilename = (url) => {
 };
 
 export const loadCacheIndex = async () => {
+    if (!RNFS) return;
     try {
-        await RNFS.mkdir(CACHE_DIR);
+        const cacheDir = getCacheDir();
+        await RNFS.mkdir(cacheDir);
         const stored = await AsyncStorage.getItem(CACHE_INDEX_KEY);
         if (stored) {
-            cacheIndex = JSON.parse(stored);
+            const parsed = JSON.parse(stored);
+            const valid = {};
+            await Promise.all(
+                Object.entries(parsed).map(async ([url, path]) => {
+                    try {
+                        if (await RNFS.exists(path)) {
+                            valid[url] = path;
+                        }
+                    } catch {}
+                })
+            );
+            cacheIndex = valid;
+            await AsyncStorage.setItem(CACHE_INDEX_KEY, JSON.stringify(valid));
         }
     } catch {}
 };
 
 export const prefetchImageToFile = async (url) => {
-    if (!url) return;
+    if (!RNFS || !url) return;
     if (cacheIndex[url]) return;
     try {
+        const cacheDir = getCacheDir();
         const filename = urlToFilename(url);
-        const localPath = `${CACHE_DIR}/${filename}`;
+        const localPath = `${cacheDir}/${filename}`;
         const exists = await RNFS.exists(localPath);
         if (!exists) {
             const result = await RNFS.downloadFile({ fromUrl: url, toFile: localPath }).promise;
