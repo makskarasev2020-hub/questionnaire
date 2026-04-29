@@ -83,7 +83,7 @@ const QuestionInput = props => {
                             placeholder="Введите свой ответ"
                             value={formikProps.values[typeSchema]}
                             multiline={props.multiline}
-                            numberOfLines={props.multiline ? 4 : 1}
+                            numberOfLines={props.multiline ? undefined : 1}
                             keyboardType={keyboardTypes[typeSchema]}
                             onChangeText={formikProps.handleChange(typeSchema)}
                             placeholderTextColor={
