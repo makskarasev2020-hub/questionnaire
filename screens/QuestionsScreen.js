@@ -39,6 +39,7 @@ import ThemeConstants from '../constants/Theme';
 import { ThemeContext } from '../context';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown';
+import { getLocalUri } from '../utils/imageCache';
 
 const components = {
     string: QuestionInput,
@@ -232,8 +233,7 @@ const QuestionScreen = ({
         <AutocompleteDropdownContextProvider headerOffset={headerHeight}>
             <ImageBackground
                 source={activeQuestion?.images ? {
-                    uri: `https://promedcs.ursosan.ru/${activeQuestion.images}`,
-                    ...(Platform.OS === 'ios' ? { cache: 'force-cache' } : {}),
+                    uri: getLocalUri(`https://promedcs.ursosan.ru/${activeQuestion.images}`),
                 } : null}
                 resizeMode="cover"
                 style={[styles.container, {backgroundColor: '#fff'}]}>

@@ -15,9 +15,9 @@ import {
 } from '../../action-types';
 import { getRenderItem, splitIntoFolders } from '../../../utils/question';
 
-import { Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import httpClient from '../../../httpClient';
+import { prefetchImageToFile } from '../../../utils/imageCache';
 
 const BASE_IMAGE_URL = 'https://promedcs.ursosan.ru/';
 
@@ -40,7 +40,7 @@ const prefetchQuestionImages = (questionnaires) => {
             });
         }
     });
-    urls.forEach(url => Image.prefetch(url).catch(() => {}));
+    urls.forEach(url => prefetchImageToFile(url));
 };
 
 // Загрузка всех опросников (с поддержкой кэша для оффлайна)

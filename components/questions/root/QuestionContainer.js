@@ -2,7 +2,8 @@ import * as Animatable from 'react-native-animatable';
 
 import { Button } from 'react-native-paper';
 import React, { createRef, useContext, useEffect, useState } from 'react';
-import { StyleSheet, View, Image, Platform } from 'react-native';
+import { StyleSheet, View, Image } from 'react-native';
+import { getLocalUri } from '../../../utils/imageCache';
 
 import Text from '../../Text';
 import QuestionFooter from './QuestionFooter';
@@ -126,8 +127,7 @@ const QuestionContent = ({
                                 style={styles.image}
                                 resizeMode="contain"
                                 source={{
-                                    uri: `https://promedcs.ursosan.ru/${item}`,
-                                    ...(Platform.OS === 'ios' ? { cache: 'force-cache' } : {}),
+                                    uri: getLocalUri(`https://promedcs.ursosan.ru/${item}`),
                                 }}
                             />
                         )}

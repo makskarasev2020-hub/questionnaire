@@ -3,17 +3,17 @@ import {
     SAVE_QUESTION_FOLDER_LOADING,
 } from '../../action-types';
 
-import { Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import httpClient from '../../../httpClient';
+import { prefetchImageToFile } from '../../../utils/imageCache';
 
 const BASE_IMAGE_URL = 'https://promedcs.ursosan.ru/';
 
 const prefetchFolderImages = (folders) => {
     if (!folders || !Array.isArray(folders)) return;
     folders.forEach(f => {
-        if (f.icon) Image.prefetch(`${BASE_IMAGE_URL}${f.icon}`).catch(() => {});
-        if (f.image) Image.prefetch(`${BASE_IMAGE_URL}${f.image}`).catch(() => {});
+        if (f.icon) prefetchImageToFile(`${BASE_IMAGE_URL}${f.icon}`);
+        if (f.image) prefetchImageToFile(`${BASE_IMAGE_URL}${f.image}`);
     });
 };
 

@@ -16,6 +16,7 @@ import { Provider } from 'react-redux';
 import { ThemeContext } from './context';
 import store from './store/index';
 import { PaperProvider, MD3LightTheme } from 'react-native-paper';
+import { loadCacheIndex } from './utils/imageCache';
 
 // --- ГЛОБАЛЬНАЯ НАСТРОЙКА ТЕКСТА ---
 // Этот код заставляет ВЕСЬ текст в приложении быть черным по умолчанию
@@ -47,6 +48,7 @@ const lightTheme = {
 
 const App = () => {
     const [theme, setTheme] = useState('men');
+    const [cacheReady, setCacheReady] = useState(false);
 
     useEffect(() => {
         AsyncStorage.getItem('designTemplate').then(value => {
@@ -54,7 +56,10 @@ const App = () => {
                 setTheme(value);
             }
         });
+        loadCacheIndex().finally(() => setCacheReady(true));
     }, []);
+
+    if (!cacheReady) return null;
 
     return (
         <Provider store={store}>
