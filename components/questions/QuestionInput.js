@@ -1,7 +1,7 @@
 import * as yup from 'yup';
 
 import React, { createRef, useContext, useEffect } from 'react';
-import { StyleSheet, TextInput, Text, Platform } from 'react-native';
+import { StyleSheet, TextInput, Text, View } from 'react-native';
 
 import { Formik } from 'formik';
 import QuestionContent from './root/QuestionContainer';
@@ -74,35 +74,33 @@ const QuestionInput = props => {
                             formikProps.values[typeSchema]) ||
                         !props.data.options.is_required
                     }>
-                    <TextInput
-                        placeholder="Введите свой ответ"
-                        value={formikProps.values[typeSchema]}
-                        multiline={props.multiline}
-                        numberOfLines={props.multiline ? 4 : 1}
-                        keyboardType={keyboardTypes[typeSchema]}
-                        onChangeText={formikProps.handleChange(typeSchema)}
-                        placeholderTextColor={
-                            props.isLight ? 'rgba(255,255,255, 0.7)' : '#000000'
-                        }
-                        onBlur={formikProps.handleBlur(typeSchema)}
-                        style={[
-                            StyleSheet.flatten(styles.input(props.isLight)),
-                            props.multiline
-                                ? {
-                                    height: undefined,
-                                    minHeight: 30,
-                                    paddingVertical: 0,
-                                    textAlignVertical: 'top',
-                                    borderBottomColor: ThemeConstants[theme].borderColor,
-                                }
-                                : {
-                                    height: 36,
-                                    paddingVertical: 0,
-                                    textAlignVertical: 'center',
-                                    borderBottomColor: ThemeConstants[theme].borderColor,
-                                },
-                        ]}
-                    />
+                    <View style={{
+                        width: '100%',
+                        borderBottomWidth: 1,
+                        borderBottomColor: ThemeConstants[theme].borderColor || '#ee6e73',
+                    }}>
+                        <TextInput
+                            placeholder="Введите свой ответ"
+                            value={formikProps.values[typeSchema]}
+                            multiline={props.multiline}
+                            numberOfLines={props.multiline ? 4 : 1}
+                            keyboardType={keyboardTypes[typeSchema]}
+                            onChangeText={formikProps.handleChange(typeSchema)}
+                            placeholderTextColor={
+                                props.isLight ? 'rgba(255,255,255, 0.7)' : '#000000'
+                            }
+                            onBlur={formikProps.handleBlur(typeSchema)}
+                            style={{
+                                fontSize: 18,
+                                paddingVertical: 2,
+                                paddingHorizontal: 0,
+                                color: props.isLight ? 'rgba(255,255,255, 0.8)' : '#000',
+                                textAlignVertical: props.multiline ? 'top' : 'center',
+                                width: '100%',
+                                ...(props.multiline ? { minHeight: 30 } : {}),
+                            }}
+                        />
+                    </View>
                 </QuestionContent>
             )}
         </Formik>
