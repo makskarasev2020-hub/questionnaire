@@ -41,6 +41,15 @@ import { useHeaderHeight } from '@react-navigation/elements';
 import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown';
 import { getLocalUri } from '../utils/imageCache';
 
+const BASE_IMAGE_URL = 'https://promedcs.ursosan.ru/';
+const buildImageUri = (path) => {
+    if (!path) return null;
+    const trimmed = path.trim();
+    if (!trimmed) return null;
+    const full = trimmed.startsWith('http') ? trimmed : `${BASE_IMAGE_URL}${trimmed}`;
+    return getLocalUri(full);
+};
+
 const components = {
     string: QuestionInput,
     text: props => <QuestionInput {...props} multiline />,
@@ -233,7 +242,7 @@ const QuestionScreen = ({
         <AutocompleteDropdownContextProvider headerOffset={headerHeight}>
             <ImageBackground
                 source={activeQuestion?.images ? {
-                    uri: getLocalUri(`https://promedcs.ursosan.ru/${activeQuestion.images}`),
+                    uri: buildImageUri(activeQuestion.images),
                 } : null}
                 resizeMode="cover"
                 style={[styles.container, {backgroundColor: '#fff'}]}>

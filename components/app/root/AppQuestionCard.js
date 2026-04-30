@@ -2,6 +2,12 @@ import { Image, StyleSheet, Text, ActivityIndicator, View } from 'react-native';
 import React, { useContext } from 'react';
 import { getLocalUri } from '../../../utils/imageCache';
 
+const buildImageUri = (url) => {
+    if (!url) return null;
+    const trimmed = url.trim();
+    return trimmed ? getLocalUri(trimmed) : null;
+};
+
 import { Button } from 'react-native-paper';
 import ThemeConstants from '../../../constants/Theme';
 import { ThemeContext } from '../../../context';
@@ -19,8 +25,8 @@ const AppQuestionCard = ({
     return (
         <View style={styles.container}>
             <Image
-                source={imageUrl
-                    ? { uri: getLocalUri(imageUrl) }
+                source={buildImageUri(imageUrl)
+                    ? { uri: buildImageUri(imageUrl) }
                     : require('../../../assets/images/icon.png')}
                 resizeMode="contain"
                 style={styles.image}

@@ -21,20 +21,27 @@ import { prefetchImageToFile } from '../../../utils/imageCache';
 
 const BASE_IMAGE_URL = 'https://promedcs.ursosan.ru/';
 
+const toFullUrl = (path) => {
+    if (!path) return null;
+    const trimmed = path.trim();
+    if (!trimmed) return null;
+    return trimmed.startsWith('http') ? trimmed : `${BASE_IMAGE_URL}${trimmed}`;
+};
+
 const prefetchQuestionImages = (questionnaires) => {
     if (!questionnaires || !Array.isArray(questionnaires)) return;
     const urls = new Set();
     questionnaires.forEach(q => {
-        if (q.icon) urls.add(`${BASE_IMAGE_URL}${q.icon}`);
-        if (q.image) urls.add(`${BASE_IMAGE_URL}${q.image}`);
-        if (q.images) urls.add(`${BASE_IMAGE_URL}${q.images}`);
+        if (q.icon) { const u = toFullUrl(q.icon); if (u) urls.add(u); }
+        if (q.image) { const u = toFullUrl(q.image); if (u) urls.add(u); }
+        if (q.images) { const u = toFullUrl(q.images); if (u) urls.add(u); }
         if (q.questions && Array.isArray(q.questions)) {
             q.questions.forEach(question => {
-                if (question.images) urls.add(`${BASE_IMAGE_URL}${question.images}`);
+                if (question.images) { const u = toFullUrl(question.images); if (u) urls.add(u); }
                 if (question.image_before) {
                     question.image_before.split(',').forEach(img => {
-                        const trimmed = img.trim();
-                        if (trimmed) urls.add(`${BASE_IMAGE_URL}${trimmed}`);
+                        const u = toFullUrl(img);
+                        if (u) urls.add(u);
                     });
                 }
             });

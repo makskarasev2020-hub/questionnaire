@@ -9,11 +9,20 @@ import { prefetchImageToFile } from '../../../utils/imageCache';
 
 const BASE_IMAGE_URL = 'https://promedcs.ursosan.ru/';
 
+const toFullUrl = (path) => {
+    if (!path) return null;
+    const trimmed = path.trim();
+    if (!trimmed) return null;
+    return trimmed.startsWith('http') ? trimmed : `${BASE_IMAGE_URL}${trimmed}`;
+};
+
 const prefetchFolderImages = (folders) => {
     if (!folders || !Array.isArray(folders)) return;
     folders.forEach(f => {
-        if (f.icon) prefetchImageToFile(`${BASE_IMAGE_URL}${f.icon}`);
-        if (f.image) prefetchImageToFile(`${BASE_IMAGE_URL}${f.image}`);
+        const iconUrl = toFullUrl(f.icon);
+        const imageUrl = toFullUrl(f.image);
+        if (iconUrl) prefetchImageToFile(iconUrl);
+        if (imageUrl) prefetchImageToFile(imageUrl);
     });
 };
 

@@ -5,6 +5,14 @@ import React, { createRef, useContext, useEffect, useState } from 'react';
 import { StyleSheet, View, Image } from 'react-native';
 import { getLocalUri } from '../../../utils/imageCache';
 
+const BASE_IMAGE_URL = 'https://promedcs.ursosan.ru/';
+const buildImageUri = (item) => {
+    const trimmed = item.trim();
+    if (!trimmed) return null;
+    const full = trimmed.startsWith('http') ? trimmed : `${BASE_IMAGE_URL}${trimmed}`;
+    return getLocalUri(full);
+};
+
 import Text from '../../Text';
 import QuestionFooter from './QuestionFooter';
 
@@ -122,15 +130,16 @@ const QuestionContent = ({
                         itemWidth={LayoutConstants.window.width}
                         data={data.image_before.split(',')}
                         onSnapToItem={setActiveSlide}
-                        renderItem={({ item }) => (
-                            <Image
-                                style={styles.image}
-                                resizeMode="contain"
-                                source={{
-                                    uri: getLocalUri(`https://promedcs.ursosan.ru/${item}`),
-                                }}
-                            />
-                        )}
+                        renderItem={({ item }) => {
+                            const uri = buildImageUri(item);
+                            return uri ? (
+                                <Image
+                                    style={styles.image}
+                                    resizeMode="contain"
+                                    source={{ uri }}
+                                />
+                            ) : null;
+                        }}
                     />
 
                     <Pagination
