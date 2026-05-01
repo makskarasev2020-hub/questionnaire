@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text, ActivityIndicator, View, Platform } from 'react-native';
+import { Image, StyleSheet, Text, ActivityIndicator, View } from 'react-native';
 import React, { useContext } from 'react';
 
 const buildImageUri = (url) => {
@@ -25,10 +25,7 @@ const AppQuestionCard = ({
         <View style={styles.container}>
             <Image
                 source={buildImageUri(imageUrl)
-                    ? {
-                        uri: buildImageUri(imageUrl),
-                        ...(Platform.OS === 'ios' ? { cache: 'force-cache' } : {}),
-                    }
+                    ? { uri: buildImageUri(imageUrl) }
                     : require('../../../assets/images/icon.png')}
                 resizeMode="contain"
                 style={styles.image}

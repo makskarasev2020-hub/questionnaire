@@ -2,7 +2,7 @@ import * as Animatable from 'react-native-animatable';
 
 import { Button } from 'react-native-paper';
 import React, { createRef, useContext, useEffect, useState } from 'react';
-import { StyleSheet, View, Image, Platform } from 'react-native';
+import { StyleSheet, View, Image } from 'react-native';
 
 const BASE_IMAGE_URL = 'https://promedcs.ursosan.ru/';
 const buildImageUri = (item) => {
@@ -134,10 +134,7 @@ const QuestionContent = ({
                                 <Image
                                     style={styles.image}
                                     resizeMode="contain"
-                                    source={{
-                                        uri,
-                                        ...(Platform.OS === 'ios' ? { cache: 'force-cache' } : {}),
-                                    }}
+                                    source={{ uri }}
                                 />
                             ) : null;
                         }}

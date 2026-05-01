@@ -8,8 +8,7 @@ import {
     View,
     ImageBackground,
     BackHandler,
-    ActivityIndicator,
-    Platform
+    ActivityIndicator
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import React, { useEffect, useState, useMemo, useContext } from 'react';
@@ -240,7 +239,6 @@ const QuestionScreen = ({
             <ImageBackground
                 source={activeQuestion?.images ? {
                     uri: buildImageUri(activeQuestion.images),
-                    ...(Platform.OS === 'ios' ? { cache: 'force-cache' } : {}),
                 } : null}
                 resizeMode="cover"
                 style={[styles.container, {backgroundColor: '#fff'}]}>
