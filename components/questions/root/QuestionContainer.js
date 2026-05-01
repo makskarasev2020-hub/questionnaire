@@ -126,7 +126,7 @@ const QuestionContent = ({
                     <Carousel
                         sliderWidth={LayoutConstants.window.width}
                         itemWidth={LayoutConstants.window.width}
-                        data={data.image_before.split(',')}
+                        data={data.image_before.split(',').filter(item => item.trim())}
                         onSnapToItem={setActiveSlide}
                         renderItem={({ item }) => {
                             const uri = buildImageUri(item);
@@ -141,7 +141,7 @@ const QuestionContent = ({
                     />
 
                     <Pagination
-                        dotsLength={data.image_before.split(',').length}
+                        dotsLength={data.image_before.split(',').filter(item => item.trim()).length}
                         activeDotIndex={activeSlide}
                         dotStyle={{
                             width: 10,
