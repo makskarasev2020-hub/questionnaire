@@ -2,15 +2,13 @@ import * as Animatable from 'react-native-animatable';
 
 import { Button } from 'react-native-paper';
 import React, { createRef, useContext, useEffect, useState } from 'react';
-import { StyleSheet, View, Image } from 'react-native';
-import { getLocalUri } from '../../../utils/imageCache';
+import { StyleSheet, View, Image, Platform } from 'react-native';
 
 const BASE_IMAGE_URL = 'https://promedcs.ursosan.ru/';
 const buildImageUri = (item) => {
     const trimmed = item.trim();
     if (!trimmed) return null;
-    const full = trimmed.startsWith('http') ? trimmed : `${BASE_IMAGE_URL}${trimmed}`;
-    return getLocalUri(full);
+    return trimmed.startsWith('http') ? trimmed : `${BASE_IMAGE_URL}${trimmed}`;
 };
 
 import Text from '../../Text';
@@ -136,7 +134,10 @@ const QuestionContent = ({
                                 <Image
                                     style={styles.image}
                                     resizeMode="contain"
-                                    source={{ uri }}
+                                    source={{
+                                        uri,
+                                        ...(Platform.OS === 'ios' ? { cache: 'force-cache' } : {}),
+                                    }}
                                 />
                             ) : null;
                         }}

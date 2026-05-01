@@ -1,11 +1,10 @@
-import { Image, StyleSheet, Text, ActivityIndicator, View } from 'react-native';
+import { Image, StyleSheet, Text, ActivityIndicator, View, Platform } from 'react-native';
 import React, { useContext } from 'react';
-import { getLocalUri } from '../../../utils/imageCache';
 
 const buildImageUri = (url) => {
     if (!url) return null;
     const trimmed = url.trim();
-    return trimmed ? getLocalUri(trimmed) : null;
+    return trimmed || null;
 };
 
 import { Button } from 'react-native-paper';
@@ -26,7 +25,10 @@ const AppQuestionCard = ({
         <View style={styles.container}>
             <Image
                 source={buildImageUri(imageUrl)
-                    ? { uri: buildImageUri(imageUrl) }
+                    ? {
+                        uri: buildImageUri(imageUrl),
+                        ...(Platform.OS === 'ios' ? { cache: 'force-cache' } : {}),
+                    }
                     : require('../../../assets/images/icon.png')}
                 resizeMode="contain"
                 style={styles.image}

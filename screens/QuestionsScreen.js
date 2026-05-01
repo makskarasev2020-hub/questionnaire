@@ -39,15 +39,12 @@ import ThemeConstants from '../constants/Theme';
 import { ThemeContext } from '../context';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown';
-import { getLocalUri } from '../utils/imageCache';
-
 const BASE_IMAGE_URL = 'https://promedcs.ursosan.ru/';
 const buildImageUri = (path) => {
     if (!path) return null;
     const trimmed = path.trim();
     if (!trimmed) return null;
-    const full = trimmed.startsWith('http') ? trimmed : `${BASE_IMAGE_URL}${trimmed}`;
-    return getLocalUri(full);
+    return trimmed.startsWith('http') ? trimmed : `${BASE_IMAGE_URL}${trimmed}`;
 };
 
 const components = {
@@ -243,6 +240,7 @@ const QuestionScreen = ({
             <ImageBackground
                 source={activeQuestion?.images ? {
                     uri: buildImageUri(activeQuestion.images),
+                    ...(Platform.OS === 'ios' ? { cache: 'force-cache' } : {}),
                 } : null}
                 resizeMode="cover"
                 style={[styles.container, {backgroundColor: '#fff'}]}>
