@@ -22,6 +22,7 @@ import YouTube from 'react-native-youtube';
 import ThemeConstants from '../../../constants/Theme';
 import { ThemeContext } from '../../../context';
 import LayoutConstants from '../../../constants/Layout';
+import { getLocalUri } from '../../../utils/imageCache';
 
 const QuestionContent = ({
     data,
@@ -134,7 +135,7 @@ const QuestionContent = ({
                                 <Image
                                     style={styles.image}
                                     resizeMode="contain"
-                                    source={{ uri }}
+                                    source={{ uri: getLocalUri(uri) }}
                                 />
                             ) : null;
                         }}

@@ -12,6 +12,7 @@ import ThemeConstants from '../../../constants/Theme';
 import { ThemeContext } from '../../../context';
 import LayoutConstants from '../../../constants/Layout';
 import Layout from '../../../constants/Layout';
+import { getLocalUri } from '../../../utils/imageCache';
 
 const AppQuestionCard = ({
     imageUrl,
@@ -25,7 +26,7 @@ const AppQuestionCard = ({
         <View style={styles.container}>
             <Image
                 source={buildImageUri(imageUrl)
-                    ? { uri: buildImageUri(imageUrl) }
+                    ? { uri: getLocalUri(buildImageUri(imageUrl)) }
                     : require('../../../assets/images/icon.png')}
                 resizeMode="contain"
                 style={styles.image}
