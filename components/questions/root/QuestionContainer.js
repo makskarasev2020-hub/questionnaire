@@ -282,7 +282,7 @@ const styles = StyleSheet.create({
 
     image: {
         width: LayoutConstants.window.width,
-        height: '100%',
+        height: LayoutConstants.window.height * 0.5,
     },
 
     btnNext: {
