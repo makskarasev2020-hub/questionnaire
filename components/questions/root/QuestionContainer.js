@@ -123,7 +123,7 @@ const QuestionContent = ({
                 <Animatable.View
                     style={styles.imageBefore}
                     animation={!pageDesctiptor ? 'fadeInUp' : ''}
-                    useNativeDriver={true}>
+                    useNativeDriver={false}>
                     <Carousel
                         sliderWidth={LayoutConstants.window.width}
                         itemWidth={LayoutConstants.window.width}
@@ -132,11 +132,13 @@ const QuestionContent = ({
                         renderItem={({ item }) => {
                             const uri = buildImageUri(item);
                             return uri ? (
-                                <Image
-                                    style={styles.image}
-                                    resizeMode="contain"
-                                    source={{ uri: getLocalUri(uri) }}
-                                />
+                                <View collapsable={false}>
+                                    <Image
+                                        style={styles.image}
+                                        resizeMode="contain"
+                                        source={{ uri: getLocalUri(uri) }}
+                                    />
+                                </View>
                             ) : null;
                         }}
                     />
