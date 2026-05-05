@@ -2,7 +2,7 @@ import * as Animatable from 'react-native-animatable';
 
 import { Button } from 'react-native-paper';
 import React, { createRef, useContext, useEffect, useState } from 'react';
-import { StyleSheet, View, Image } from 'react-native';
+import { StyleSheet, View, Image, ScrollView } from 'react-native';
 
 const BASE_IMAGE_URL = 'https://promedcs.ursosan.ru/';
 const buildImageUri = (item) => {
@@ -122,39 +122,43 @@ const QuestionContent = ({
 
             {(!!data.image_before && !isShowQuestion) && (
                 <View style={styles.imageBefore}>
-                    <Carousel
-                        sliderWidth={LayoutConstants.window.width}
-                        itemWidth={LayoutConstants.window.width}
-                        data={data.image_before.split(',').filter(item => item.trim())}
-                        onSnapToItem={setActiveSlide}
-                        renderItem={({ item }) => {
+                    <ScrollView
+                        horizontal
+                        pagingEnabled
+                        showsHorizontalScrollIndicator={false}
+                        onMomentumScrollEnd={(e) => {
+                            const idx = Math.round(
+                                e.nativeEvent.contentOffset.x / LayoutConstants.window.width
+                            );
+                            setActiveSlide(idx);
+                        }}
+                    >
+                        {data.image_before.split(',').filter(item => item.trim()).map((item, idx) => {
                             const uri = buildImageUri(item);
                             return uri ? (
-                                <View collapsable={false} style={{ opacity: imageLoaded ? 1 : 1 }}>
-                                    <Image
-                                        style={styles.image}
-                                        resizeMode="contain"
-                                        source={{ uri: getLocalUri(uri) }}
-                                        onLoadEnd={() => setImageLoaded(true)}
-                                    />
-                                </View>
+                                <Image
+                                    key={idx}
+                                    style={styles.image}
+                                    resizeMode="contain"
+                                    source={{ uri: getLocalUri(uri) }}
+                                />
                             ) : null;
-                        }}
-                    />
+                        })}
+                    </ScrollView>
 
-                    <Pagination
-                        dotsLength={data.image_before.split(',').filter(item => item.trim()).length}
-                        activeDotIndex={activeSlide}
-                        dotStyle={{
-                            width: 10,
-                            height: 10,
-                            borderRadius: 5,
-                            marginHorizontal: 8,
-                            backgroundColor: 'rgba(0, 0, 0, 0.92)',
-                        }}
-                        inactiveDotOpacity={0.4}
-                        inactiveDotScale={0.6}
-                    />
+                    {data.image_before.split(',').filter(item => item.trim()).length > 1 && (
+                        <View style={styles.dotsRow}>
+                            {data.image_before.split(',').filter(item => item.trim()).map((_, idx) => (
+                                <View
+                                    key={idx}
+                                    style={[
+                                        styles.dot,
+                                        idx === activeSlide ? styles.dotActive : styles.dotInactive,
+                                    ]}
+                                />
+                            ))}
+                        </View>
+                    )}
 
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Button
@@ -278,8 +282,30 @@ const styles = StyleSheet.create({
 
     imageBefore: {
         flex: 1,
-        alignItems: 'center',
+    },
+
+    dotsRow: {
+        flexDirection: 'row',
         justifyContent: 'center',
+        alignItems: 'center',
+        paddingVertical: 8,
+    },
+
+    dot: {
+        width: 10,
+        height: 10,
+        borderRadius: 5,
+        marginHorizontal: 8,
+    },
+
+    dotActive: {
+        backgroundColor: 'rgba(0, 0, 0, 0.92)',
+    },
+
+    dotInactive: {
+        backgroundColor: 'rgba(0, 0, 0, 0.92)',
+        opacity: 0.4,
+        transform: [{ scale: 0.6 }],
     },
 
     image: {
