@@ -45,6 +45,7 @@ const QuestionContent = ({
 
     const [activeSlide, setActiveSlide] = useState(0);
     const [isShowQuestion, setIsShowQuestion] = useState(false);
+    const [imageLoaded, setImageLoaded] = useState(false);
 
     useEffect(() => {
         if (isValid) {
@@ -120,10 +121,7 @@ const QuestionContent = ({
             )}
 
             {(!!data.image_before && !isShowQuestion) && (
-                <Animatable.View
-                    style={styles.imageBefore}
-                    animation={!pageDesctiptor ? 'fadeInUp' : ''}
-                    useNativeDriver={false}>
+                <View style={styles.imageBefore}>
                     <Carousel
                         sliderWidth={LayoutConstants.window.width}
                         itemWidth={LayoutConstants.window.width}
@@ -132,11 +130,12 @@ const QuestionContent = ({
                         renderItem={({ item }) => {
                             const uri = buildImageUri(item);
                             return uri ? (
-                                <View collapsable={false}>
+                                <View collapsable={false} style={{ opacity: imageLoaded ? 1 : 1 }}>
                                     <Image
                                         style={styles.image}
                                         resizeMode="contain"
                                         source={{ uri: getLocalUri(uri) }}
+                                        onLoadEnd={() => setImageLoaded(true)}
                                     />
                                 </View>
                             ) : null;
@@ -182,7 +181,7 @@ const QuestionContent = ({
                             <Text>Перейти к вопросу</Text>
                         </Button>
                     </View>
-                </Animatable.View>
+                </View>
             )}
 
             {((!data.image_before && !data.video_before) || isShowQuestion) && (
