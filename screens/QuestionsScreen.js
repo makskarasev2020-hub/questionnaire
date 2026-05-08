@@ -185,16 +185,15 @@ const QuestionScreen = ({
     };
 
     const handleSendAnswers = () => {
-        if (!answers || !answers[questionnaireId]) {
-            setQuestionSendingIsLoading(false);
-            return;
-        }
+        const results = (answers && answers[questionnaireId])
+            ? Object.values(answers[questionnaireId])
+            : [];
 
         setQuestionSendingIsLoading(true);
         sendAnswers({
             questionnaireId,
             questionName,
-            results: Object.values(answers[questionnaireId]),
+            results,
             cb: () => setQuestionSendingIsLoading(false),
             uploadCb: (percent) => setUploadPercentCompleted(percent)
         });

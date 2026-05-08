@@ -9,7 +9,9 @@ const QuestionCongratulations = ({ onStart = () => { }, onEnd = () => { }, quest
 
     useEffect(() => {
         onStart();
+        const fallback = setTimeout(() => onEnd(), 10000);
         return () => {
+            clearTimeout(fallback);
             if (timeoutRef.current) {
                 clearTimeout(timeoutRef.current);
             }
