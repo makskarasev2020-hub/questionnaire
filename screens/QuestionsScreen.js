@@ -24,14 +24,19 @@ import QuestionAgreement from '../components/questions/QuestionAgreement';
 import QuestionCanvas from '../components/questions/QuestionCanvas';
 import QuestionCity from '../components/questions/QuestionCity';
 import QuestionCongratulations from '../components/questions/root/QuestionCongratulations';
+import QuestionDatepicker from '../components/questions/QuestionDatepicker';
+import QuestionDropwdown from '../components/questions/QuestionDropwdown';
 import QuestionInput from '../components/questions/QuestionInput';
+import QuestionKeyMessages from '../components/questions/QuestionKeyMessages';
 import QuestionPageDescriptor from '../components/questions/QuestionPageDescriptor';
 import QuestionPhoto from '../components/questions/QuestionPhoto';
 import QuestionPoints from '../components/questions/QuestionPoints';
+import QuestionSearchSelect from '../components/questions/QuestionSearchSelect';
 import QuestionSelect from '../components/questions/QuestionSelect';
 import QuestionSelectMulti from '../components/questions/QuestionSelectMulti';
 import QuestionSlider from '../components/questions/QuestionSlider';
 import QuestionFile from '../components/questions/QuestionFile';
+import QuestionYesNoInput from '../components/questions/QuestionYesNoInput';
 import { connect } from 'react-redux';
 
 import ThemeConstants from '../constants/Theme';
@@ -61,6 +66,15 @@ const components = {
     address: QuestionAddress,
     photo: QuestionPhoto,
     'page-descriptor': QuestionPageDescriptor,
+    datepicker: QuestionDatepicker,
+    'yesno-with-input': QuestionYesNoInput,
+    'brand-mention': QuestionDropwdown,
+    dropdown: QuestionDropwdown,
+    'search-select': QuestionSearchSelect,
+    'lecture-title': QuestionSearchSelect,
+    lecturer: QuestionSearchSelect,
+    'key-messages-checkboxes': QuestionKeyMessages,
+    'who-organized': QuestionSearchSelect,
 };
 
 const QuestionScreen = ({
@@ -283,7 +297,26 @@ const QuestionScreen = ({
                                     isLast={activeQuestionIndex === data.length - 2}
                                     onNext={_handlerNextQuestion}
                                     onPrev={_handlerPrevQuestion}
-                                    onMassUpdate={() => setActiveQuestionIndex(activeQuestionIndex + 1)}
+                                    onMassUpdate={(pageAnswers) => {
+                                        if (pageAnswers && typeof pageAnswers === 'object') {
+                                            const activeQ = data[activeQuestionIndex];
+                                            const formatted = {};
+                                            Object.keys(pageAnswers).forEach(questionTitle => {
+                                                formatted[questionTitle] = {
+                                                    group: activeQ.group || activeQ.title,
+                                                    need_score: true,
+                                                    score: 1,
+                                                    right_answers: 0,
+                                                    question: questionTitle,
+                                                    type: activeQ.type,
+                                                    question_no: activeQ.sort,
+                                                    answer: pageAnswers[questionTitle],
+                                                };
+                                            });
+                                            saveAnswerMass({ questionnaireId, answers: formatted });
+                                        }
+                                        setActiveQuestionIndex(activeQuestionIndex + 1);
+                                    }}
                                 />
                             )}
                         </View>
