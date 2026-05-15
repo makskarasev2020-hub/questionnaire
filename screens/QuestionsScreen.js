@@ -11,7 +11,7 @@ import {
     ActivityIndicator
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import React, { useEffect, useState, useMemo, useContext } from 'react';
+import React, { useEffect, useState, useMemo, useContext, useRef } from 'react';
 import {
     saveAnswer,
     saveAnswerMass,
@@ -88,6 +88,7 @@ const QuestionScreen = ({
     const { theme } = useContext(ThemeContext);
     const [descriptorAnswers, setDescriptorAnswers] = useState({});
     const [questionSendingIsLoading, setQuestionSendingIsLoading] = useState(false);
+    const hasSentAnswers = useRef(false);
     const [uploadPercentCompleted, setUploadPercentCompleted] = useState(0);
 
     const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
@@ -199,6 +200,9 @@ const QuestionScreen = ({
     };
 
     const handleSendAnswers = () => {
+        if (hasSentAnswers.current) return;
+        hasSentAnswers.current = true;
+
         const results = (answers && answers[questionnaireId])
             ? Object.values(answers[questionnaireId])
             : [];
