@@ -87,16 +87,14 @@ const QuestionPageDescriptor = props => {
         // console.log(props.defaultValue)
 
         const _initialValuesState = {};
-        props.data.items.forEach((item, index) => {
-            // _initialValuesState[`${index}`] = null;
-            if (props?.defaultValue) {
-                Object.keys(props.defaultValue).forEach((key, index) => {
-                    if (props.defaultValue[key].group === props.data.title) {
-                        _initialValuesState[`${index}`] = props.defaultValue[key].answer;
-                    }
-                });
+        props.data.items.forEach((item, itemIndex) => {
+            if (props?.defaultValue && props.defaultValue[item.title]) {
+                const savedAnswer = props.defaultValue[item.title];
+                if (savedAnswer.group === props.data.title || savedAnswer.answer !== undefined) {
+                    _initialValuesState[`${itemIndex}`] = savedAnswer.answer;
+                }
             }
-            validations[`${index}`] = item.options.is_required
+            validations[`${itemIndex}`] = item.options.is_required
                 ? yup.string().required()
                 : yup.string();
         });

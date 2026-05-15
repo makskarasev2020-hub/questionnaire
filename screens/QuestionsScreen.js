@@ -89,6 +89,7 @@ const QuestionScreen = ({
     const [descriptorAnswers, setDescriptorAnswers] = useState({});
     const [questionSendingIsLoading, setQuestionSendingIsLoading] = useState(false);
     const hasSentAnswers = useRef(false);
+    const latestAnswersRef = useRef(answers);
     const [uploadPercentCompleted, setUploadPercentCompleted] = useState(0);
 
     const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
@@ -159,6 +160,10 @@ const QuestionScreen = ({
         }
     }, [currentTime]);
 
+    useEffect(() => {
+        latestAnswersRef.current = answers;
+    }, [answers]);
+
     const isLigth = useMemo(() => true, []);
 
     const _handlerNextQuestion = value => {
@@ -203,8 +208,9 @@ const QuestionScreen = ({
         if (hasSentAnswers.current) return;
         hasSentAnswers.current = true;
 
-        const results = (answers && answers[questionnaireId])
-            ? Object.values(answers[questionnaireId])
+        const currentAnswers = latestAnswersRef.current;
+        const results = (currentAnswers && currentAnswers[questionnaireId])
+            ? Object.values(currentAnswers[questionnaireId])
             : [];
 
         setQuestionSendingIsLoading(true);
@@ -304,16 +310,23 @@ const QuestionScreen = ({
                                     onMassUpdate={(pageAnswers) => {
                                         if (pageAnswers && typeof pageAnswers === 'object') {
                                             const activeQ = data[activeQuestionIndex];
+                                            const itemsByTitle = {};
+                                            if (activeQ.items && Array.isArray(activeQ.items)) {
+                                                activeQ.items.forEach(item => {
+                                                    itemsByTitle[item.title] = item;
+                                                });
+                                            }
                                             const formatted = {};
                                             Object.keys(pageAnswers).forEach(questionTitle => {
+                                                const subItem = itemsByTitle[questionTitle];
                                                 formatted[questionTitle] = {
                                                     group: activeQ.group || activeQ.title,
                                                     need_score: true,
                                                     score: 1,
                                                     right_answers: 0,
                                                     question: questionTitle,
-                                                    type: activeQ.type,
-                                                    question_no: activeQ.sort,
+                                                    type: subItem ? subItem.type : activeQ.type,
+                                                    question_no: subItem ? subItem.sort : activeQ.sort,
                                                     answer: pageAnswers[questionTitle],
                                                 };
                                             });
