@@ -90,6 +90,7 @@ const QuestionScreen = ({
     const [questionSendingIsLoading, setQuestionSendingIsLoading] = useState(false);
     const hasSentAnswers = useRef(false);
     const latestAnswersRef = useRef(answers);
+    latestAnswersRef.current = answers;
     const [uploadPercentCompleted, setUploadPercentCompleted] = useState(0);
 
     const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
@@ -316,8 +317,32 @@ const QuestionScreen = ({
                                                     itemsByTitle[item.title] = item;
                                                 });
                                             }
+                                            const normalizeAnswer = (val) => {
+                                                if (val === null || val === undefined) return '';
+                                                if (typeof val === 'string' || typeof val === 'number' || typeof val === 'boolean') return val;
+                                                if (typeof val === 'object') {
+                                                    if (val.target && Object.prototype.hasOwnProperty.call(val.target, 'value')) {
+                                                        return normalizeAnswer(val.target.value);
+                                                    }
+                                                    if (Array.isArray(val)) return val.join(', ');
+                                                    if (typeof val.address === 'string') {
+                                                        return val.city ? `${val.city}, ${val.address}` : val.address;
+                                                    }
+                                                    try {
+                                                        return JSON.stringify(val);
+                                                    } catch (e) {
+                                                        return String(val);
+                                                    }
+                                                }
+                                                return String(val);
+                                            };
                                             const formatted = {};
                                             Object.keys(pageAnswers).forEach(questionTitle => {
+                                                const rawValue = pageAnswers[questionTitle];
+                                                const normalized = normalizeAnswer(rawValue);
+                                                if (normalized === '' || normalized === null || normalized === undefined) {
+                                                    return;
+                                                }
                                                 const subItem = itemsByTitle[questionTitle];
                                                 formatted[questionTitle] = {
                                                     group: activeQ.group || activeQ.title,
@@ -327,10 +352,13 @@ const QuestionScreen = ({
                                                     question: questionTitle,
                                                     type: subItem ? subItem.type : activeQ.type,
                                                     question_no: subItem ? subItem.sort : activeQ.sort,
-                                                    answer: pageAnswers[questionTitle],
+                                                    answer: normalized,
                                                 };
                                             });
-                                            saveAnswerMass({ questionnaireId, answers: formatted });
+                                            console.log('onMassUpdate: questionnaireId=', questionnaireId, 'formatted keys=', Object.keys(formatted));
+                                            if (Object.keys(formatted).length > 0) {
+                                                saveAnswerMass({ questionnaireId, answers: formatted });
+                                            }
                                         }
                                         setActiveQuestionIndex(activeQuestionIndex + 1);
                                     }}

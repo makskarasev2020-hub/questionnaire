@@ -105,11 +105,24 @@ export const loadQuestion =
 // ОТПРАВКА ОТВЕТОВ (Исправлено для оффлайна)
 export const sendAnswers = ({ questionnaireId, questionName, results, cb, uploadCb }) => {
     return (dispatch, getState) => {
+        const state = getState();
         const {
             main: { domen },
             auth: { user, token },
-        } = getState();
-        
+            question: { main: { answers: storeAnswers } },
+        } = state;
+
+        if (!Array.isArray(results) || results.length === 0) {
+            const fromStore = storeAnswers && storeAnswers[questionnaireId];
+            if (fromStore && typeof fromStore === 'object') {
+                results = Object.values(fromStore).filter(Boolean);
+            } else {
+                results = results || [];
+            }
+        }
+
+        console.log('sendAnswers: questionnaireId=', questionnaireId, 'results.length=', Array.isArray(results) ? results.length : 'n/a');
+
         const userId = user?.id || user?.user_id;
         const url = `${domen}/api/answers/save`;
         const authorization = 'Bearer ' + token;

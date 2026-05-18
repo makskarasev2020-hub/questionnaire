@@ -9,6 +9,9 @@ export default function useUploadImage(defaultValue) {
             {
                 mediaType: 'photo',
                 includeBase64: true,
+                maxWidth: 2048,
+                maxHeight: 2048,
+                quality: 0.9,
             },
             response => {
                 if (!response?.didCancel && response?.assets[0]?.base64) {
