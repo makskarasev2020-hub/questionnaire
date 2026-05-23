@@ -144,19 +144,24 @@ export const sendAnswers = ({ questionnaireId, questionName, results, cb, upload
                 },
             )
             .then(response => {
-                if (response.data && response.data.success) {
+                const status = response && response.status;
+                const httpOk = typeof status === 'number' && status >= 200 && status < 300;
+                const explicitSuccess = response && response.data && response.data.success === true;
+                const explicitFailure = response && response.data && response.data.success === false;
+                console.log('sendAnswers response status=', status, 'data=', response && response.data);
+
+                if ((httpOk && !explicitFailure) || explicitSuccess) {
                     dispatch(
                         saveAnswersSend({
                             userId: userId,
                             questionnaireId: questionnaireId,
                             question_name: questionName,
-                            answerId: response.data.answer_id,
-                            createdAt: response.data.created_at,
+                            answerId: response.data && response.data.answer_id,
+                            createdAt: response.data && response.data.created_at,
                             data: results,
                         }),
                     );
                 } else {
-                    // Если сервер ответил ошибкой, сохраняем в "неотправленные"
                     dispatch(saveAnswersNotSend({
                         userId: userId,
                         questionnaireId: questionnaireId,
@@ -168,8 +173,8 @@ export const sendAnswers = ({ questionnaireId, questionName, results, cb, upload
                 if (cb) cb();
             })
             .catch(error => {
-                // КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: если интернет пропал, обязательно сохраняем локально
-                console.log('Сеть недоступна, сохраняем опрос в очередь');
+                const status = error && error.response && error.response.status;
+                console.log('sendAnswers error status=', status, 'message=', error && error.message, 'data=', error && error.response && error.response.data);
                 dispatch(saveAnswersNotSend({
                     userId: userId,
                     questionnaireId: questionnaireId,
@@ -178,7 +183,7 @@ export const sendAnswers = ({ questionnaireId, questionName, results, cb, upload
                 }));
 
                 dispatch(resetAnswerData(questionnaireId));
-                if (cb) cb(); // Вызываем cb, чтобы закрыть экран опроса
+                if (cb) cb();
             });
     };
 };

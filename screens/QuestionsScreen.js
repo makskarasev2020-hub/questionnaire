@@ -330,6 +330,32 @@ const QuestionScreen = ({
                                                 if (typeof val === 'object') return Object.keys(val).length === 0;
                                                 return false;
                                             };
+                                            const OBJECT_ANSWER_TYPES = new Set(['key-messages-checkboxes']);
+                                            const normalizeForType = (val, type) => {
+                                                if (OBJECT_ANSWER_TYPES.has(type)) {
+                                                    return val;
+                                                }
+                                                if (val === null || val === undefined) return '';
+                                                if (typeof val === 'string' || typeof val === 'number' || typeof val === 'boolean') {
+                                                    return val;
+                                                }
+                                                if (Array.isArray(val)) {
+                                                    return val.map(v => (v === null || v === undefined ? '' : String(v))).filter(Boolean).join(', ');
+                                                }
+                                                if (typeof val === 'object') {
+                                                    if (typeof val.address === 'string' || typeof val.city === 'string') {
+                                                        const city = val.city ? String(val.city).trim() : '';
+                                                        const addr = val.address ? String(val.address).trim() : '';
+                                                        return [city, addr].filter(Boolean).join(', ');
+                                                    }
+                                                    try {
+                                                        return JSON.stringify(val);
+                                                    } catch (e) {
+                                                        return String(val);
+                                                    }
+                                                }
+                                                return String(val);
+                                            };
                                             const formatted = {};
                                             Object.keys(pageAnswers).forEach(questionTitle => {
                                                 const rawValue = unwrapEvent(pageAnswers[questionTitle]);
@@ -337,15 +363,20 @@ const QuestionScreen = ({
                                                     return;
                                                 }
                                                 const subItem = itemsByTitle[questionTitle];
+                                                const itemType = subItem ? subItem.type : activeQ.type;
+                                                const finalAnswer = normalizeForType(rawValue, itemType);
+                                                if (isEmptyAnswer(finalAnswer)) {
+                                                    return;
+                                                }
                                                 formatted[questionTitle] = {
                                                     group: activeQ.group || activeQ.title,
                                                     need_score: true,
                                                     score: 1,
                                                     right_answers: 0,
                                                     question: questionTitle,
-                                                    type: subItem ? subItem.type : activeQ.type,
+                                                    type: itemType,
                                                     question_no: subItem ? subItem.sort : activeQ.sort,
-                                                    answer: rawValue,
+                                                    answer: finalAnswer,
                                                 };
                                             });
                                             console.log('onMassUpdate: questionnaireId=', questionnaireId, 'formatted keys=', Object.keys(formatted));
