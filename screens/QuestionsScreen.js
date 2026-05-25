@@ -330,9 +330,16 @@ const QuestionScreen = ({
                                                 if (typeof val === 'object') return Object.keys(val).length === 0;
                                                 return false;
                                             };
-                                            const OBJECT_ANSWER_TYPES = new Set(['key-messages-checkboxes']);
+                                            const OBJECT_ANSWER_TYPES = new Set([
+                                                'key-messages-checkboxes',
+                                                'yesno-with-input',
+                                                'selectMulti',
+                                            ]);
                                             const normalizeForType = (val, type) => {
                                                 if (OBJECT_ANSWER_TYPES.has(type)) {
+                                                    return val;
+                                                }
+                                                if (type === 'select' && val && typeof val === 'object' && val.options && val.multiple) {
                                                     return val;
                                                 }
                                                 if (val === null || val === undefined) return '';
@@ -340,7 +347,7 @@ const QuestionScreen = ({
                                                     return val;
                                                 }
                                                 if (Array.isArray(val)) {
-                                                    return val.map(v => (v === null || v === undefined ? '' : String(v))).filter(Boolean).join(', ');
+                                                    return val;
                                                 }
                                                 if (typeof val === 'object') {
                                                     if (typeof val.address === 'string' || typeof val.city === 'string') {
