@@ -24,19 +24,42 @@ export default function QuestionKeyMessages(props) {
     };
 
     const validationSchema = yup.object().shape({
-        kc: yup.array().of(yup.string()).required().min(1),
-        slides: yup.array().of(yup.string()),
+        sound: yup.array().of(yup.number()).required().min(1),
+        kc: yup.array().of(yup.number()),
+        slides: yup.array().of(yup.number()),
     });
+
+    // Map checkbox selections from indices to actual values
+    const getSoundValues = () => {
+        const selectedIndices = props.defaultValue?.sound ?? [];
+        return selectedIndices;
+    };
+
+    const getKcValues = () => {
+        const selectedIndices = props.defaultValue?.kc ?? [];
+        return selectedIndices;
+    };
 
     return (
         <Formik
             initialValues={{
-                kc: props.defaultValue?.kc ?? [],
-                slides: props.defaultValue?.slides ?? [],
+                sound: getSoundValues(),
+                kc: getKcValues(),
             }}
             validateOnMount={props.validateOnMount}
-            onSubmit={(values, actions) => {
-                props.onNext(values);
+            onSubmit={(formikValues, actions) => {
+                // Convert selected indices back to actual values
+                const soundIndices = formikValues.sound;
+                const kcIndices = formikValues.kc;
+
+                const soundValues = soundIndices.map(index => values[index]?.[1] || '');
+
+                const kcValues = kcIndices.map(index => values[index]?.[1] || '');
+
+                props.onNext({
+                    sound: soundValues,
+                    kc: kcValues
+                });
             }}
             validationSchema={validationSchema}
         >
