@@ -1,9 +1,9 @@
+import React, { useEffect, useState } from 'react';
 import * as yup from 'yup';
-import React, { useState, useEffect } from 'react';
+import { Formik } from 'formik';
 import QuestionContent from './root/QuestionContainer';
 import AppSelectSearch from '../app/root/AppSelectSearch';
 import useFetchItems from '../hooks/useFetchItems';
-import { Formik } from 'formik';
 
 export default function QuestionLecturer(props) {
     const [fetchItems] = useFetchItems();
@@ -22,12 +22,10 @@ export default function QuestionLecturer(props) {
 
     return (
         <Formik
-            initialValues={{
-                lecture: null,
-            }}
+            initialValues={{ lecture: '' }}
             validateOnMount={props.validateOnMount}
-            onSubmit={(values, actions) => {
-                props.onNext(values);
+            onSubmit={(values) => {
+                props.onNext(values.lecture); // send plain string name
             }}
             validationSchema={validationSchema}
         >
@@ -36,7 +34,7 @@ export default function QuestionLecturer(props) {
                     {...props}
                     onNext={formikProps.submitForm}
                     isValid={
-                        (!formikProps.errors.default && formikProps.values.default) ||
+                        (!formikProps.errors.lecture && !!formikProps.values.lecture) ||
                         !props.data.options.is_required
                     }>
                     <AppSelectSearch
@@ -44,7 +42,7 @@ export default function QuestionLecturer(props) {
                         items={lectures}
                         placeholder="Выбрать из списка"
                         onChange={value => {
-                            return formikProps.handleChange('lecture')({ target: { value } });
+                            formikProps.handleChange('lecture')({ target: { value } });
                         }}
                     />
                 </QuestionContent>
