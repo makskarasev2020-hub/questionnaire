@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import * as yup from 'yup';
+
 import { Formik } from 'formik';
 import QuestionContent from './root/QuestionContainer';
 import AppSelectSearch from '../app/root/AppSelectSearch';
@@ -22,11 +23,12 @@ export default function QuestionLectureTitle(props) {
 
     return (
         <Formik
-            initialValues={{ title: '', titleId: null }}
+            initialValues={{
+                title: '',
+            }}
             validateOnMount={props.validateOnMount}
-            onSubmit={(values) => {
-                // Backend does Lecture::find((int)$result->answer) — must send numeric ID
-                props.onNext(values.titleId ?? values.title);
+            onSubmit={(values, actions) => {
+                props.onNext(values);
             }}
             validationSchema={validationSchema}
         >
@@ -35,7 +37,7 @@ export default function QuestionLectureTitle(props) {
                     {...props}
                     onNext={formikProps.submitForm}
                     isValid={
-                        (!formikProps.errors.title && !!formikProps.values.title) ||
+                        (!formikProps.errors.default && formikProps.values.default) ||
                         !props.data.options.is_required
                     }>
                     <AppSelectSearch
@@ -43,10 +45,7 @@ export default function QuestionLectureTitle(props) {
                         items={titles}
                         placeholder="Выбрать из списка"
                         onChange={value => {
-                            // value is item.name (string) — find the full item to get its id
-                            const found = titles.find(t => t.name === value);
-                            formikProps.setFieldValue('titleId', found?.id ?? null);
-                            formikProps.handleChange('title')({ target: { value } });
+                            return formikProps.handleChange('title')({ target: { value } });
                         }}
                     />
                 </QuestionContent>
